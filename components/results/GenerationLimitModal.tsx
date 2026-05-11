@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { X, Sparkles } from "lucide-react";
 
@@ -10,7 +11,7 @@ interface GenerationLimitModalProps {
 }
 
 const PERKS = [
-  { emoji: "✨", text: "More AI generations on paid plans" },
+  { emoji: "✨", text: "Unlimited AI meal plan generations" },
   { emoji: "💾", text: "Save & revisit all your weekly plans" },
   { emoji: "🥗", text: "Set dietary preferences" },
   { emoji: "📋", text: "Full meal history" },
@@ -18,6 +19,7 @@ const PERKS = [
 
 export function GenerationLimitModal({ isOpen, onClose, isGuest }: GenerationLimitModalProps) {
   const { openSignUp, openSignIn } = useClerk();
+  const router = useRouter();
 
   if (!isOpen) return null;
 
@@ -81,10 +83,10 @@ export function GenerationLimitModal({ isOpen, onClose, isGuest }: GenerationLim
         ) : (
           <div className="space-y-3">
             <button
-              onClick={onClose}
+              onClick={() => { onClose(); router.push("/pricing"); }}
               className="w-full py-3.5 bg-espresso text-cream font-sans font-semibold text-sm rounded-2xl hover:bg-espresso-light transition-colors"
             >
-              Join the waitlist for Pro
+              See Pro plans
             </button>
             <button
               onClick={onClose}

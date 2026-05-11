@@ -4,6 +4,7 @@ import { getOrCreateDbUser } from "../../../lib/utils/getOrCreateDbUser";
 import { Navbar } from "../../../components/layout/Navbar";
 import { Footer } from "../../../components/layout/Footer";
 import { PreferencesForm } from "./PreferencesForm";
+import { BillingSection } from "./BillingSection";
 
 export default async function SettingsPage() {
   const user = await getOrCreateDbUser();
@@ -23,6 +24,12 @@ export default async function SettingsPage() {
         </div>
 
         <div className="space-y-10">
+          {/* Billing */}
+          <BillingSection
+            plan={user.plan as "free" | "pro"}
+            hasSubscription={!!user.stripeSubscriptionId}
+          />
+
           {/* Dietary preferences */}
           <section>
             <h2 className="font-serif tracking-tighter text-2xl text-espresso mb-1">
@@ -40,6 +47,7 @@ export default async function SettingsPage() {
               Account
             </h2>
             <UserProfile
+              routing="hash"
               appearance={{
                 elements: {
                   rootBox: "w-full",

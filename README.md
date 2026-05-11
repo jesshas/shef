@@ -14,6 +14,7 @@ Plan your week, get a smart consolidated grocery list, and see your nutrition at
 - **Guest → account import** — sign up after planning and your week is automatically saved
 - **Dietary preferences** — set vegetarian, vegan, gluten-free, dairy-free, low-carb, or high-protein; passed to the AI on every generation
 - **Saved recipes** — bookmark meals with tag filtering (4 free, Pro unlimited)
+- **Subscriptions** — embedded Stripe checkout (no redirect); monthly ($4.99) and annual ($49) Pro plans
 - **Mobile-friendly** — responsive grid; iOS & Android install-to-home-screen prompt
 
 ---
@@ -27,6 +28,7 @@ Plan your week, get a smart consolidated grocery list, and see your nutrition at
 | Auth | Clerk (optional — only required to persist data) |
 | Database | Neon (PostgreSQL) + Drizzle ORM |
 | AI | Anthropic Claude (`claude-sonnet-4-6`) or OpenAI (`gpt-4o`) |
+| Payments | Stripe (embedded Elements — no hosted redirect) |
 | Toasts | Sonner |
 | Icons | Lucide React |
 | Validation | Zod |
@@ -41,6 +43,7 @@ Plan your week, get a smart consolidated grocery list, and see your nutrition at
 - A [Neon](https://neon.tech) database
 - An [Anthropic](https://console.anthropic.com) or [OpenAI](https://platform.openai.com) API key
 - A [Clerk](https://clerk.com) app (or use keyless dev mode — Clerk starts automatically without keys in local dev)
+- A [Stripe](https://stripe.com) account (test mode is fine for local dev)
 
 ### 1. Clone & install
 
@@ -69,9 +72,16 @@ Edit `.env.local`:
 | `OPENAI_API_KEY` | No** | Required if `AI_PROVIDER=openai` |
 | `OPENAI_MODEL` | No | Override OpenAI model (default: `gpt-4o`) |
 | `ANTHROPIC_MODEL` | No | Override Claude model (default: `claude-sonnet-4-6`) |
+| `NEXT_PUBLIC_APP_URL` | Yes | Full origin URL e.g. `http://localhost:3000` |
+| `STRIPE_SECRET_KEY` | Yes*** | Stripe secret key (`sk_test_...` or `sk_live_...`) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Yes*** | Stripe publishable key (`pk_test_...`) |
+| `STRIPE_WEBHOOK_SECRET` | Yes*** | Stripe webhook signing secret (`whsec_...`) |
+| `STRIPE_MONTHLY_PRICE_ID` | Yes*** | Stripe Price ID for the $4.99/month plan |
+| `STRIPE_ANNUAL_PRICE_ID` | Yes*** | Stripe Price ID for the $49/year plan |
 
 \* Clerk runs in keyless dev mode locally if omitted — auth is fully functional without API keys in development.  
-\*\* AI generation returns a friendly error toast if no key is configured.
+\*\* AI generation returns a friendly error toast if no key is configured.  
+\*\*\* Required for subscriptions to work. Payments are disabled if omitted.
 
 ### 3. Push database schema
 
@@ -129,7 +139,9 @@ npx drizzle-kit studio     # Open Drizzle Studio UI
 | `/plan/[weekId]` | Auth | Saved week view |
 | `/dashboard` | Auth | User home — stats and past weeks |
 | `/recipes` | Auth | Saved recipe bookmarks |
-| `/settings` | Auth | Account profile + dietary preferences |
+| `/settings` | Auth | Account profile + dietary preferences + billing |
+| `/pricing` | Public | Plan comparison — Free vs Pro |
+| `/upgrade` | Auth | Embedded Stripe checkout (`?plan=monthly` or `?plan=annual`) |
 
 ---
 
@@ -147,6 +159,52 @@ Copy the signing secret into `CLERK_WEBHOOK_SECRET` in your production environme
 
 ---
 
+## Stripe setup
+
+### 1. Create products & prices
+
+In the [Stripe Dashboard](https://dashboard.stripe.com/products), create one product called **"Shef Pro"** with two recurring prices:
+
+| Price | Amount | Interval |
+|---|---|---|
+| Monthly | $4.99 | Monthly |
+| Annual | $49.00 | Yearly |
+
+Copy each Price ID (`price_...`) into `STRIPE_MONTHLY_PRICE_ID` and `STRIPE_ANNUAL_PRICE_ID`.
+
+### 2. Configure the webhook
+
+In production, add a webhook endpoint in your Stripe dashboard pointing to:
+
+```
+https://your-domain.com/api/webhooks/stripe
+```
+
+Subscribe to:
+- `invoice.paid` — grants Pro access after successful payment
+- `customer.subscription.deleted` — revokes Pro access on cancellation
+- `invoice.payment_failed` — logged for observability; Stripe retries automatically
+
+Copy the signing secret into `STRIPE_WEBHOOK_SECRET`.
+
+### 3. Testing locally
+
+Install the [Stripe CLI](https://stripe.com/docs/stripe-cli) and forward events to your local server:
+
+```bash
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+The CLI prints a webhook signing secret — use that as `STRIPE_WEBHOOK_SECRET` in `.env.local` while developing.
+
+Use Stripe's test card `4242 4242 4242 4242` (any future expiry, any CVC) to complete a test payment.
+
+### 4. Billing portal
+
+Enable the [Customer Portal](https://dashboard.stripe.com/settings/billing/portal) in your Stripe dashboard so users can manage and cancel their subscriptions from the Settings page.
+
+---
+
 ## Project structure
 
 ```
@@ -156,8 +214,12 @@ app/
   plan/[weekId]/page.tsx       # Saved week view
   (auth)/dashboard/            # Dashboard
   (auth)/recipes/              # Saved recipes
-  (auth)/settings/             # Settings
+  (auth)/settings/             # Settings + billing
+  pricing/page.tsx             # Pricing page
+  upgrade/page.tsx             # Embedded Stripe checkout
   api/webhooks/clerk/route.ts  # Clerk → Neon user sync
+  api/webhooks/stripe/route.ts # Stripe → plan upgrade/downgrade
+  api/stripe/create-subscription/route.ts  # Creates subscription + returns clientSecret
 
 components/
   ui/                          # Button, Card, SlideOver, Badge, Input, Accordion
@@ -169,7 +231,8 @@ components/
 lib/
   db/                          # Drizzle schema + Neon client
   ai/                          # AI generation (Anthropic + OpenAI)
-  actions/                     # Server actions
+  actions/                     # Server actions (billing portal)
+  stripe/                      # Stripe client singleton
   guest/                       # localStorage helpers
   utils/                       # Macros, week helpers, limit checks
   validations/                 # Zod schemas
