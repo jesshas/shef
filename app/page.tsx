@@ -141,6 +141,101 @@ export default function LandingPage() {
       </section>
 
 
+      {/* AI Output Preview */}
+      <section className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-cream border border-rose/40 rounded-full text-xs font-sans font-medium text-espresso/70 mb-6 shadow-sm">
+              <span>✨</span>
+              What you get after one click
+            </div>
+            <h2 className="font-serif text-4xl text-espresso mb-4">
+              A full week, fully thought through.
+            </h2>
+            <p className="text-espresso/60 font-sans text-lg max-w-xl mx-auto">
+              shef generates nutrition for every meal and consolidates your entire week&apos;s shopping into one clean list.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 items-start">
+            {/* Nutrition card */}
+            <div className="bg-white/70 backdrop-blur border border-rose/20 rounded-3xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="font-serif text-xl text-espresso">Weekly Nutrition</h3>
+                  <p className="text-xs text-espresso/50 font-sans mt-0.5">7-day totals · daily avg in brackets</p>
+                </div>
+                <span className="text-2xl">🥗</span>
+              </div>
+
+              <div className="space-y-4">
+                {DEMO_NUTRITION.map(({ label, total, daily, color, pct }) => (
+                  <div key={label}>
+                    <div className="flex justify-between text-xs font-sans mb-1.5">
+                      <span className="font-medium text-espresso/70">{label}</span>
+                      <span className="text-espresso/50">{total} <span className="text-espresso/30">· {daily}/day</span></span>
+                    </div>
+                    <div className="h-2 bg-linen rounded-full overflow-hidden">
+                      <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 pt-5 border-t border-rose/10 grid grid-cols-3 gap-3">
+                {DEMO_DAY_MEALS.map(({ day, meals }) => (
+                  <div key={day} className="bg-cream rounded-xl p-3">
+                    <p className="text-[10px] font-sans font-semibold text-espresso/40 uppercase tracking-wider mb-2">{day}</p>
+                    <div className="space-y-1">
+                      {meals.map((m) => (
+                        <p key={m} className="text-[10px] font-sans text-espresso/70 leading-tight">{m}</p>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Grocery list card */}
+            <div className="bg-white/70 backdrop-blur border border-rose/20 rounded-3xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="font-serif text-xl text-espresso">Grocery List</h3>
+                  <p className="text-xs text-espresso/50 font-sans mt-0.5">Consolidated for the whole week</p>
+                </div>
+                <span className="text-2xl">🛒</span>
+              </div>
+
+              <div className="space-y-5">
+                {DEMO_GROCERY.map(({ category, emoji, items }) => (
+                  <div key={category}>
+                    <p className="text-[10px] font-sans font-semibold text-espresso/40 uppercase tracking-wider mb-2">
+                      {emoji} {category}
+                    </p>
+                    <div className="space-y-2">
+                      {items.map((item, i) => (
+                        <div key={i} className="flex items-center gap-2.5">
+                          <div className="w-4 h-4 rounded border border-rose/30 bg-cream shrink-0" />
+                          <span className="text-sm font-sans text-espresso/70">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5 pt-4 border-t border-rose/10 flex items-center justify-between">
+                <span className="text-xs text-espresso/40 font-sans">24 items across 4 categories</span>
+                <div className="flex gap-2">
+                  <div className="px-3 py-1.5 bg-linen rounded-lg text-xs font-sans text-espresso/60 border border-rose/20">Copy</div>
+                  <div className="px-3 py-1.5 bg-linen rounded-lg text-xs font-sans text-espresso/60 border border-rose/20">Print</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="py-24 px-6 text-center bg-espresso text-cream">
         <div className="max-w-xl mx-auto">
@@ -191,6 +286,44 @@ const DEMO_MEALS = [
   { title: "", empty: true },
   { title: "Salmon & veg", empty: false },
   { title: "Roast dinner", empty: false },
+];
+
+// Demo nutrition preview data
+const DEMO_NUTRITION = [
+  { label: "Calories", total: "13,650 kcal", daily: "1,950", color: "bg-rose", pct: 78 },
+  { label: "Protein", total: "735 g", daily: "105 g", color: "bg-sage", pct: 85 },
+  { label: "Carbohydrates", total: "1,540 g", daily: "220 g", color: "bg-amber-300", pct: 65 },
+  { label: "Fat", total: "490 g", daily: "70 g", color: "bg-rose/50", pct: 52 },
+];
+
+const DEMO_DAY_MEALS = [
+  { day: "Mon", meals: ["Avocado toast", "Caesar salad", "Pasta arrabbiata"] },
+  { day: "Wed", meals: ["Greek yogurt", "Leftovers", "Roast chicken"] },
+  { day: "Fri", meals: ["Smoothie", "Soup & bread", "Thai curry"] },
+];
+
+// Demo grocery list preview data
+const DEMO_GROCERY = [
+  {
+    category: "Produce",
+    emoji: "🥬",
+    items: ["2 avocados", "1 bag mixed salad leaves", "4 lemons", "Fresh ginger, thumb-sized piece"],
+  },
+  {
+    category: "Protein",
+    emoji: "🥩",
+    items: ["1 whole chicken (1.5 kg)", "2 salmon fillets", "6 large eggs"],
+  },
+  {
+    category: "Pantry",
+    emoji: "🫙",
+    items: ["Pasta (400 g)", "Coconut milk (400 ml)", "Red curry paste"],
+  },
+  {
+    category: "Dairy",
+    emoji: "🧀",
+    items: ["Greek yogurt (500 g)", "Parmesan, block", "Unsalted butter"],
+  },
 ];
 
 
