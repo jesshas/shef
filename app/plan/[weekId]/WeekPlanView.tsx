@@ -133,7 +133,7 @@ export function WeekPlanView({ week, meals: initialMeals, savedResults, userId }
           ) : (
             <>
               <Sparkles size={20} />
-              {results ? "Regenerate My Week" : "✨ Generate My Week"}
+              {results ? "Regenerate My Week" : "Generate My Week"}
             </>
           )}
         </button>

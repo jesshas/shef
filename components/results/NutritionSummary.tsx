@@ -23,7 +23,6 @@ export function NutritionSummaryView({ summary }: NutritionSummaryProps) {
               AI estimates based on your meal plan
             </p>
           </div>
-          <Badge variant="estimate">AI estimates</Badge>
         </div>
       </CardHeader>
 
