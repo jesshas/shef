@@ -1,0 +1,207 @@
+"use client";
+
+import { useState, useRef, useTransition } from "react";
+import { useUser } from "@clerk/nextjs";
+import { Sparkles, ChevronDown } from "lucide-react";
+import { Navbar } from "../../../components/layout/Navbar";
+import { Footer } from "../../../components/layout/Footer";
+import { WeekGrid } from "../../../components/meal-grid/WeekGrid";
+import { MealSlideOver } from "../../../components/meal-grid/MealSlideOver";
+import { ResultsView } from "../../../components/results/ResultsView";
+import { useWeekPlan } from "../../../hooks/useWeekPlan";
+import { useMealSlideOver } from "../../../hooks/useMealSlideOver";
+import { useGuestPlan } from "../../../hooks/useGuestPlan";
+import { generateWeekPlanAction } from "../../../lib/actions/generateWeekPlan";
+import { formatWeekRange } from "../../../lib/utils/weekHelpers";
+import type { WeekResults, MealInput } from "../../../lib/validations/schemas";
+import { toast } from "sonner";
+
+// Loading skeleton for the results section
+function ResultsSkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      <div className="h-64 bg-rose-light/30 rounded-2xl" />
+      <div className="h-96 bg-linen rounded-2xl" />
+      <div className="h-48 bg-cream-dark/50 rounded-2xl" />
+    </div>
+  );
+}
+
+export default function PlanNewPage() {
+  const { isSignedIn } = useUser();
+  const { isGuest } = useGuestPlan();
+  const [results, setResults] = useState<WeekResults | null>(null);
+  const [guestPromptDismissed, setGuestPromptDismissed] = useState(false);
+  const [copyingMeal, setCopyingMeal] = useState<MealInput | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  const {
+    meals,
+    weekStartDate,
+    addMeal,
+    updateMeal,
+    deleteMeal,
+    getMealForSlot,
+    mealCount,
+  } = useWeekPlan(isGuest);
+
+  const { slideOver, openSlideOver, closeSlideOver } = useMealSlideOver();
+
+  const canGenerate = mealCount >= 3;
+
+  function handleGenerate() {
+    if (!canGenerate) return;
+
+    startTransition(async () => {
+      const loadingToastId = toast.loading("✨ Shef is planning your week...", {
+        description: "Analyzing your meals and building your grocery list",
+      });
+
+      try {
+        const result = await generateWeekPlanAction({ meals });
+
+        toast.dismiss(loadingToastId);
+
+        if (result.success && result.results) {
+          setResults(result.results);
+
+          // Scroll to results
+          setTimeout(() => {
+            resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 100);
+
+          toast.success("Your week is ready! 🌿");
+        } else {
+          toast.error(result.error ?? "Something went wrong. Please try again.");
+        }
+      } catch (err) {
+        toast.dismiss(loadingToastId);
+        toast.error("Couldn't generate your plan. Check your connection and try again.");
+      }
+    });
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-10">
+        {/* Page header */}
+        <div className="mb-10">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-sans font-semibold text-espresso/50 uppercase tracking-wider">
+              Weekly Planner
+            </span>
+          </div>
+          <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">
+            Plan your week
+          </h1>
+          <p className="text-espresso/60 font-sans">
+            {formatWeekRange(weekStartDate)} ·{" "}
+            {mealCount === 0 ? (
+              <span className="italic">No meals yet — let&apos;s fill this week with something delicious 🍳</span>
+            ) : (
+              <span>
+                {mealCount} meal{mealCount !== 1 ? "s" : ""} planned
+                {!canGenerate && ` — add ${3 - mealCount} more to generate`}
+              </span>
+            )}
+          </p>
+        </div>
+
+        {/* Meal Grid */}
+        <div className="mb-10">
+          <WeekGrid
+            getMealForSlot={getMealForSlot}
+            onCellClick={openSlideOver}
+            onDeleteMeal={deleteMeal}
+            onQuickAdd={(day, mealType, title) => addMeal({ dayOfWeek: day, mealType, title })}
+            onDuplicateMeal={(source, targetDay, targetMealType) =>
+              addMeal({ dayOfWeek: targetDay, mealType: targetMealType, title: source.title, recipeUrl: source.recipeUrl, notes: source.notes })
+            }
+            copyingMeal={copyingMeal}
+            onSetCopyingMeal={setCopyingMeal}
+          />
+        </div>
+
+        {/* Generate CTA */}
+        <div className="flex flex-col items-center gap-3 py-8 border-t border-rose/20">
+          <button
+            onClick={handleGenerate}
+            disabled={!canGenerate || isPending}
+            className={[
+              "group inline-flex items-center gap-3 px-10 py-5 font-sans font-semibold text-lg rounded-2xl transition-all duration-300",
+              canGenerate && !isPending
+                ? "bg-espresso text-cream hover:bg-espresso-light hover:-translate-y-1 hover:shadow-xl shadow-espresso/20 shadow-md cursor-pointer"
+                : "bg-linen text-espresso/40 cursor-not-allowed shadow-none",
+            ].join(" ")}
+          >
+            {isPending ? (
+              <>
+                <span className="w-5 h-5 border-2 border-cream border-t-transparent rounded-full animate-spin" />
+                Generating your week...
+              </>
+            ) : (
+              <>
+                <Sparkles size={20} className={canGenerate ? "text-rose group-hover:rotate-12 transition-transform" : ""} />
+               Generate My Week
+              </>
+            )}
+          </button>
+
+          {!canGenerate && mealCount < 3 && (
+            <p className="text-xs text-espresso/40 font-sans">
+              Add at least {3 - mealCount} more meal{3 - mealCount !== 1 ? "s" : ""} to unlock generation
+            </p>
+          )}
+
+          {results && !isPending && (
+            <button
+              onClick={() =>
+                resultsRef.current?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="flex items-center gap-1 text-sm text-espresso/50 hover:text-espresso font-sans transition-colors mt-2"
+            >
+              <ChevronDown size={16} />
+              Scroll to your results
+            </button>
+          )}
+        </div>
+
+        {/* Results section */}
+        <div ref={resultsRef} className="mt-4">
+          {isPending && <ResultsSkeleton />}
+          {!isPending && results && (
+            <ResultsView
+              results={results}
+              meals={meals}
+              isGuest={isGuest && !isSignedIn}
+              onGuestPromptDismiss={() => setGuestPromptDismissed(true)}
+            />
+          )}
+        </div>
+      </main>
+
+      {/* Meal slide-over */}
+      <MealSlideOver
+        isOpen={slideOver.isOpen}
+        onClose={closeSlideOver}
+        day={slideOver.day}
+        mealType={slideOver.mealType}
+        existingMeal={slideOver.existingMeal}
+        onSave={(data) => {
+          if (slideOver.existingMeal) {
+            updateMeal(slideOver.existingMeal.id, data);
+          } else {
+            addMeal(data);
+          }
+        }}
+        onDelete={slideOver.existingMeal ? () => { deleteMeal(slideOver.existingMeal!.id); closeSlideOver(); } : undefined}
+        onStartCopy={slideOver.existingMeal ? () => { setCopyingMeal(slideOver.existingMeal!); closeSlideOver(); } : undefined}
+      />
+
+      <Footer />
+    </div>
+  );
+}
