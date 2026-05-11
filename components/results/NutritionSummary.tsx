@@ -18,7 +18,7 @@ export function NutritionSummaryView({ summary }: NutritionSummaryProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-serif text-2xl text-espresso">Weekly Nutrition</h2>
+            <h2 className="font-serif tracking-tighter text-2xl text-espresso">Weekly Nutrition</h2>
             <p className="text-sm text-espresso/60 font-sans mt-1">
               AI estimates based on your meal plan
             </p>
@@ -105,7 +105,7 @@ function StatCard({
       <p className="text-[11px] font-sans font-medium text-espresso/60 uppercase tracking-wide leading-tight mb-2">
         {label}
       </p>
-      <p className="font-serif text-2xl text-espresso leading-none">{value}</p>
+      <p className="font-serif tracking-tighter text-2xl text-espresso leading-none">{value}</p>
       <p className="text-xs text-espresso/50 font-sans mt-1">{sub}</p>
     </div>
   );

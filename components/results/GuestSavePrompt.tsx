@@ -43,7 +43,7 @@ export function GuestSavePrompt({ onDismiss }: GuestSavePromptProps) {
 
         {/* Copy */}
         <div className="flex-1">
-          <p className="font-serif text-lg text-espresso leading-snug">
+          <p className="font-serif tracking-tighter text-lg text-espresso leading-snug">
             Love your plan?
           </p>
           <p className="text-sm text-espresso/70 font-sans mt-1 leading-relaxed">

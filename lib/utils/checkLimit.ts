@@ -1,10 +1,11 @@
 import { db } from "../db/db";
-import { mealWeeks, savedRecipes } from "../db/schema";
+import { mealWeeks, savedRecipes, users } from "../db/schema";
 import { count, eq } from "drizzle-orm";
 
 export const FREE_LIMITS = {
   weeks: 4,
   recipes: 4,
+  generations: 4,
 } as const;
 
 type LimitType = keyof typeof FREE_LIMITS;
@@ -38,6 +39,16 @@ export async function checkLimit(
       .from(savedRecipes)
       .where(eq(savedRecipes.userId, userId));
     current = result[0]?.count ?? 0;
+  } else if (limitType === "generations") {
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+      columns: { generationCount: true, plan: true },
+    });
+    // Pro users have unlimited generations
+    if (user?.plan === "pro") {
+      return { allowed: true, current: 0, limit, remaining: Infinity };
+    }
+    current = user?.generationCount ?? 0;
   }
 
   return {

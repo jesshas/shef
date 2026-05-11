@@ -34,7 +34,7 @@ export function DayByDayBreakdown({ meals, mealNutrition }: DayByDayBreakdownPro
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
             <span className="text-lg">{getDayEmoji(day)}</span>
-            <span className="font-serif text-lg text-espresso">{day}</span>
+            <span className="font-serif tracking-tighter text-lg text-espresso">{day}</span>
             <span className="text-sm text-espresso/50 font-sans">
               {dayMeals.length} meal{dayMeals.length !== 1 ? "s" : ""}
             </span>
@@ -83,7 +83,7 @@ export function DayByDayBreakdown({ meals, mealNutrition }: DayByDayBreakdownPro
                     </div>
                     {nutrition && (
                       <div className="text-right flex-shrink-0">
-                        <p className="font-serif text-xl text-espresso">
+                        <p className="font-serif tracking-tighter text-xl text-espresso">
                           {Math.round(nutrition.calories)}
                         </p>
                         <p className="text-xs text-espresso/50 font-sans">kcal</p>
@@ -116,7 +116,7 @@ export function DayByDayBreakdown({ meals, mealNutrition }: DayByDayBreakdownPro
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="font-serif text-2xl text-espresso">Day by Day</h2>
+        <h2 className="font-serif tracking-tighter text-2xl text-espresso">Day by Day</h2>
         <p className="text-sm text-espresso/60 font-sans mt-1">
           Click a day to see all meals and their nutrition
         </p>

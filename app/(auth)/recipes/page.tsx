@@ -1,21 +1,15 @@
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "../../../lib/db/db";
-import { users, savedRecipes } from "../../../lib/db/schema";
+import { savedRecipes } from "../../../lib/db/schema";
 import { eq, desc } from "drizzle-orm";
+import { getOrCreateDbUser } from "../../../lib/utils/getOrCreateDbUser";
 import { Navbar } from "../../../components/layout/Navbar";
 import { Footer } from "../../../components/layout/Footer";
 import { RecipesClient } from "./RecipesClient";
 import { FREE_LIMITS } from "../../../lib/utils/checkLimit";
 
 export default async function RecipesPage() {
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
-
-  const user = await db.query.users.findFirst({
-    where: eq(users.clerkId, userId),
-  });
-
+  const user = await getOrCreateDbUser();
   if (!user) redirect("/sign-in");
 
   const recipes = await db.query.savedRecipes.findMany({

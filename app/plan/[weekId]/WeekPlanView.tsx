@@ -94,7 +94,7 @@ export function WeekPlanView({ week, meals: initialMeals, savedResults, userId }
             Saved to your account
           </span>
         </div>
-        <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">
+        <h1 className="font-serif tracking-tighter text-4xl sm:text-5xl text-espresso mb-2">
           {formatWeekRange(week.weekStartDate)}
         </h1>
         <p className="text-espresso/60 font-sans">

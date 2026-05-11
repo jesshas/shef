@@ -18,6 +18,7 @@ export const users = pgTable("users", {
   dietaryPreferences: jsonb("dietary_preferences")
     .$type<string[]>()
     .default([]),
+  generationCount: integer("generation_count").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

@@ -32,7 +32,7 @@ export function ResultsView({
             Your Week is Ready
           </span>
         </div>
-        <h2 className="font-serif text-3xl sm:text-4xl text-espresso">
+        <h2 className="font-serif tracking-tighter text-3xl sm:text-4xl text-espresso">
           Here&apos;s your plan
         </h2>
         <p className="text-espresso/60 font-sans mt-2">

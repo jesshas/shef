@@ -49,7 +49,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-lg sm:text-xl text-espresso/60 font-sans leading-relaxed max-w-xl mx-auto mb-10">
-            shef turns your favorite meals into a full week plan — complete with a smart grocery list and nutrition breakdown. No account needed to start.
+            shef turns your favorite meals into a full week plan — complete with a smart grocery list and nutrition breakdown.
           </p>
 
           {/* CTA */}
@@ -59,7 +59,7 @@ export default function LandingPage() {
               className="inline-flex items-center gap-3 px-8 py-4 bg-espresso text-cream font-sans font-semibold text-base rounded-2xl hover:bg-espresso-light transition-all hover:-translate-y-1 hover:shadow-lg shadow-espresso/20 shadow-md"
             >
               <span className="text-xl">✨</span>
-              Start Planning — No Sign Up Needed
+              Start Planning
             </Link>
             <p className="text-sm text-espresso/40 font-sans">Free forever. No credit card.</p>
           </div>
@@ -108,48 +108,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20 px-6 bg-linen/40">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <h2 className="font-serif text-4xl text-espresso mb-4">
-              Everything you need, nothing you don&apos;t.
-            </h2>
-            <p className="text-espresso/60 font-sans text-lg">
-              Built for people who love food but are busy living.
-            </p>
-          </div>
 
-          <div className="grid sm:grid-cols-3 gap-6">
-            {FEATURES.map((feature, i) => (
-              <div
-                key={feature.title}
-                className="bg-cream rounded-2xl p-8 border border-rose/20 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300"
-                style={{ animationDelay: `${i * 100}ms` }}
-              >
-                <div className="text-4xl mb-5">{feature.emoji}</div>
-                <h3 className="font-serif text-xl text-espresso mb-3">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-espresso/60 font-sans leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
 
       {/* AI Output Preview */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6 bg-linen/40">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-cream border border-rose/40 rounded-full text-xs font-sans font-medium text-espresso/70 mb-6 shadow-sm">
               <span>✨</span>
               What you get after one click
             </div>
-            <h2 className="font-serif text-4xl text-espresso mb-4">
+            <h2 className="font-serif tracking-tighter text-4xl text-espresso mb-4">
               A full week, fully thought through.
             </h2>
             <p className="text-espresso/60 font-sans text-lg max-w-xl mx-auto">
@@ -162,8 +132,8 @@ export default function LandingPage() {
             <div className="bg-white/70 backdrop-blur border border-rose/20 rounded-3xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="font-serif text-xl text-espresso">Weekly Nutrition</h3>
-                  <p className="text-xs text-espresso/50 font-sans mt-0.5">7-day totals · daily avg in brackets</p>
+                  <h3 className="font-serif tracking-tighter text-xl text-espresso">Weekly Nutrition</h3>
+                  <p className="text-xs text-espresso/50 font-sans mt-0.5">7-day totals · daily avg</p>
                 </div>
                 <span className="text-2xl">🥗</span>
               </div>
@@ -200,7 +170,7 @@ export default function LandingPage() {
             <div className="bg-white/70 backdrop-blur border border-rose/20 rounded-3xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="font-serif text-xl text-espresso">Grocery List</h3>
+                  <h3 className="font-serif tracking-tighter text-xl text-espresso">Grocery List</h3>
                   <p className="text-xs text-espresso/50 font-sans mt-0.5">Consolidated for the whole week</p>
                 </div>
                 <span className="text-2xl">🛒</span>
@@ -240,7 +210,7 @@ export default function LandingPage() {
       <section className="py-24 px-6 text-center bg-espresso text-cream">
         <div className="max-w-xl mx-auto">
           <div className="text-5xl mb-6">🌿</div>
-          <h2 className="font-serif text-4xl text-cream mb-4">
+          <h2 className="font-serif tracking-tighter text-4xl text-cream mb-4">
             Ready to plan something delicious?
           </h2>
           <p className="text-cream/60 font-sans mb-8 text-lg">

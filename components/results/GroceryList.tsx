@@ -60,7 +60,7 @@ export function GroceryList({ categories }: GroceryListProps) {
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="font-serif text-2xl text-espresso">Grocery List</h2>
+            <h2 className="font-serif tracking-tighter text-2xl text-espresso">Grocery List</h2>
             <p className="text-sm text-espresso/60 font-sans mt-1">
               {totalItems} items across {categories.length} categories
             </p>
@@ -99,7 +99,7 @@ export function GroceryList({ categories }: GroceryListProps) {
                 <span className="text-lg">
                   {CATEGORY_EMOJIS[category.name] ?? "🛒"}
                 </span>
-                <h3 className="font-serif text-base text-espresso">
+                <h3 className="font-serif tracking-tighter text-base text-espresso">
                   {category.name}
                 </h3>
                 <span className="text-xs text-espresso/40 font-sans">

@@ -6,7 +6,7 @@ export default function SignUpPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <span className="text-4xl">🌿</span>
-          <h1 className="font-serif text-3xl text-espresso mt-3">Create your account</h1>
+          <h1 className="font-serif tracking-tighter text-3xl text-espresso mt-3">Create your account</h1>
           <p className="text-espresso/60 font-sans mt-2 text-sm">Save your plans and access them anywhere</p>
         </div>
         <SignUp
@@ -14,7 +14,7 @@ export default function SignUpPage() {
             elements: {
               rootBox: "w-full",
               card: "bg-white border border-rose/30 rounded-2xl shadow-sm font-sans",
-              headerTitle: "font-serif text-espresso",
+              headerTitle: "font-serif tracking-tighter text-espresso",
               headerSubtitle: "text-espresso/60",
               formButtonPrimary:
                 "bg-espresso hover:bg-espresso-light text-cream font-sans rounded-xl transition-all",

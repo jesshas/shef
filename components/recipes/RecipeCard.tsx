@@ -22,7 +22,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <BookOpen size={14} className="text-sage" />
-            <h3 className="font-serif text-base text-espresso line-clamp-2">
+            <h3 className="font-serif tracking-tighter text-base text-espresso line-clamp-2">
               {recipe.title}
             </h3>
           </div>

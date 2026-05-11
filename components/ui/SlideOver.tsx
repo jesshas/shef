@@ -49,7 +49,7 @@ export function SlideOver({ isOpen, onClose, title, children }: SlideOverProps) 
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-rose/20">
-          <h2 className="font-serif text-xl text-espresso">{title}</h2>
+          <h2 className="font-serif tracking-tighter text-xl text-espresso">{title}</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-xl text-espresso/60 hover:text-espresso hover:bg-linen transition-colors"

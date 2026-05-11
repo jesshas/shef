@@ -46,7 +46,7 @@ export function UpgradePrompt({ context = "recipes" }: UpgradePromptProps) {
     return (
       <div className="border-2 border-dashed border-rose/40 rounded-2xl p-8 text-center bg-rose-light/20">
         <div className="text-3xl mb-3">🌿</div>
-        <p className="font-serif text-lg text-espresso mb-1">You&apos;re on the list!</p>
+        <p className="font-serif tracking-tighter text-lg text-espresso mb-1">You&apos;re on the list!</p>
         <p className="text-sm text-espresso/60 font-sans">
           We&apos;ll email {email} when Pro launches.
         </p>
@@ -61,7 +61,7 @@ export function UpgradePrompt({ context = "recipes" }: UpgradePromptProps) {
           <Lock size={22} className="text-espresso/60" />
         </div>
       </div>
-      <h3 className="font-serif text-xl text-espresso mb-2">
+      <h3 className="font-serif tracking-tighter text-xl text-espresso mb-2">
         Unlock Unlimited — Pro Coming Soon
       </h3>
       <p className="text-sm text-espresso/60 font-sans mb-6 leading-relaxed max-w-sm mx-auto">

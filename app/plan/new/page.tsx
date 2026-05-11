@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useTransition } from "react";
+import { useState, useRef, useTransition, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Sparkles, ChevronDown } from "lucide-react";
 import { Navbar } from "../../../components/layout/Navbar";
@@ -8,11 +8,14 @@ import { Footer } from "../../../components/layout/Footer";
 import { WeekGrid } from "../../../components/meal-grid/WeekGrid";
 import { MealSlideOver } from "../../../components/meal-grid/MealSlideOver";
 import { ResultsView } from "../../../components/results/ResultsView";
+import { GenerationLimitModal } from "../../../components/results/GenerationLimitModal";
 import { useWeekPlan } from "../../../hooks/useWeekPlan";
 import { useMealSlideOver } from "../../../hooks/useMealSlideOver";
 import { useGuestPlan } from "../../../hooks/useGuestPlan";
 import { generateWeekPlanAction } from "../../../lib/actions/generateWeekPlan";
 import { formatWeekRange } from "../../../lib/utils/weekHelpers";
+import { getGuestGenerationCount, incrementGuestGenerationCount } from "../../../lib/guest/guestStorage";
+import { FREE_LIMITS } from "../../../lib/utils/checkLimit";
 import type { WeekResults, MealInput } from "../../../lib/validations/schemas";
 import { toast } from "sonner";
 
@@ -33,8 +36,17 @@ export default function PlanNewPage() {
   const [results, setResults] = useState<WeekResults | null>(null);
   const [guestPromptDismissed, setGuestPromptDismissed] = useState(false);
   const [copyingMeal, setCopyingMeal] = useState<MealInput | null>(null);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [generationsUsed, setGenerationsUsed] = useState(0);
   const [isPending, startTransition] = useTransition();
   const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Hydrate guest generation count from localStorage
+  useEffect(() => {
+    if (!isSignedIn) {
+      setGenerationsUsed(getGuestGenerationCount());
+    }
+  }, [isSignedIn]);
 
   const {
     meals,
@@ -49,9 +61,17 @@ export default function PlanNewPage() {
   const { slideOver, openSlideOver, closeSlideOver } = useMealSlideOver();
 
   const canGenerate = mealCount >= 3;
+  const generationLimit = FREE_LIMITS.generations;
+  const generationsRemaining = Math.max(0, generationLimit - generationsUsed);
 
   function handleGenerate() {
     if (!canGenerate) return;
+
+    // Client-side limit check for guests (before spending a round-trip)
+    if (!isSignedIn && generationsUsed >= generationLimit) {
+      setShowLimitModal(true);
+      return;
+    }
 
     startTransition(async () => {
       const loadingToastId = toast.loading("✨ Shef is planning your week...", {
@@ -59,23 +79,35 @@ export default function PlanNewPage() {
       });
 
       try {
-        const result = await generateWeekPlanAction({ meals });
+        const result = await generateWeekPlanAction({
+          meals,
+          guestGenerationCount: isSignedIn ? undefined : generationsUsed,
+        });
 
         toast.dismiss(loadingToastId);
 
         if (result.success && result.results) {
           setResults(result.results);
 
-          // Scroll to results
+          // Update generation counts
+          if (!isSignedIn) {
+            incrementGuestGenerationCount();
+            setGenerationsUsed(getGuestGenerationCount());
+          } else if (result.generationsUsed !== undefined) {
+            setGenerationsUsed(result.generationsUsed);
+          }
+
           setTimeout(() => {
             resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
           }, 100);
 
           toast.success("Your week is ready! 🌿");
+        } else if (result.errorCode === "generation_limit") {
+          setShowLimitModal(true);
         } else {
           toast.error(result.error ?? "Something went wrong. Please try again.");
         }
-      } catch (err) {
+      } catch {
         toast.dismiss(loadingToastId);
         toast.error("Couldn't generate your plan. Check your connection and try again.");
       }
@@ -94,7 +126,7 @@ export default function PlanNewPage() {
               Weekly Planner
             </span>
           </div>
-          <h1 className="font-serif text-4xl sm:text-5xl text-espresso mb-2">
+          <h1 className="font-serif tracking-tighter text-4xl sm:text-5xl text-espresso mb-2">
             Plan your week
           </h1>
           <p className="text-espresso/60 font-sans">
@@ -156,6 +188,18 @@ export default function PlanNewPage() {
             </p>
           )}
 
+          {/* Generation counter */}
+          {generationsRemaining <= 2 && (
+            <p className={`text-xs font-sans ${
+              generationsRemaining === 0 ? "text-red-500" : "text-espresso/40"
+            }`}>
+              {generationsRemaining === 0
+                ? "No generations remaining — upgrade to continue"
+                : `${generationsRemaining} free generation${generationsRemaining !== 1 ? "s" : ""} remaining`
+              }
+            </p>
+          )}
+
           {results && !isPending && (
             <button
               onClick={() =>
@@ -199,6 +243,12 @@ export default function PlanNewPage() {
         }}
         onDelete={slideOver.existingMeal ? () => { deleteMeal(slideOver.existingMeal!.id); closeSlideOver(); } : undefined}
         onStartCopy={slideOver.existingMeal ? () => { setCopyingMeal(slideOver.existingMeal!); closeSlideOver(); } : undefined}
+      />
+
+      <GenerationLimitModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+        isGuest={!isSignedIn}
       />
 
       <Footer />

@@ -28,7 +28,7 @@ export function RecipesClient({ recipes, isAtLimit }: RecipesClientProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-serif text-4xl text-espresso">Saved Recipes</h1>
+          <h1 className="font-serif tracking-tighter text-4xl text-espresso">Saved Recipes</h1>
           <p className="text-espresso/60 font-sans mt-1">
             {recipes.length} recipe{recipes.length !== 1 ? "s" : ""} saved
           </p>
@@ -70,7 +70,7 @@ export function RecipesClient({ recipes, isAtLimit }: RecipesClientProps) {
       ) : recipes.length === 0 ? (
         <div className="text-center py-16">
           <div className="text-4xl mb-4">📖</div>
-          <p className="font-serif text-xl text-espresso mb-2">No recipes saved yet</p>
+          <p className="font-serif tracking-tighter text-xl text-espresso mb-2">No recipes saved yet</p>
           <p className="text-espresso/50 font-sans text-sm mb-6">
             Save your favorite meals to quickly reference them when planning
           </p>

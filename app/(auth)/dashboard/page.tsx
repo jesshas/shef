@@ -1,9 +1,9 @@
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { db } from "../../../lib/db/db";
-import { users, mealWeeks, weekResults } from "../../../lib/db/schema";
+import { mealWeeks, weekResults } from "../../../lib/db/schema";
 import { eq, desc, count } from "drizzle-orm";
+import { getOrCreateDbUser } from "../../../lib/utils/getOrCreateDbUser";
 import { Navbar } from "../../../components/layout/Navbar";
 import { Footer } from "../../../components/layout/Footer";
 import { formatWeekRange } from "../../../lib/utils/weekHelpers";
@@ -12,13 +12,7 @@ import { Button } from "../../../components/ui/Button";
 import { Calendar, Utensils, Sparkles, ArrowRight } from "lucide-react";
 
 export default async function DashboardPage() {
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
-
-  const user = await db.query.users.findFirst({
-    where: eq(users.clerkId, userId),
-  });
-
+  const user = await getOrCreateDbUser();
   if (!user) redirect("/sign-in");
 
   const firstName = user.name?.split(" ")[0] ?? "friend";
@@ -53,7 +47,7 @@ export default async function DashboardPage() {
         {/* Greeting */}
         <div className="mb-12">
           <p className="text-sm text-espresso/50 font-sans mb-1">{greeting} 🌿</p>
-          <h1 className="font-serif text-4xl sm:text-5xl text-espresso">
+          <h1 className="font-serif tracking-tighter text-4xl sm:text-5xl text-espresso">
             Welcome back, {firstName}
           </h1>
         </div>
@@ -82,7 +76,7 @@ export default async function DashboardPage() {
 
         {/* Current week or start new */}
         <div className="mb-10">
-          <h2 className="font-serif text-2xl text-espresso mb-4">This week</h2>
+          <h2 className="font-serif tracking-tighter text-2xl text-espresso mb-4">This week</h2>
           {currentWeek ? (
             <Card>
               <CardBody className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -90,7 +84,7 @@ export default async function DashboardPage() {
                   <p className="text-xs text-espresso/50 font-sans uppercase tracking-wider mb-1">
                     Current week
                   </p>
-                  <p className="font-serif text-xl text-espresso">
+                  <p className="font-serif tracking-tighter text-xl text-espresso">
                     {formatWeekRange(currentWeek.weekStartDate)}
                   </p>
                 </div>
@@ -113,7 +107,7 @@ export default async function DashboardPage() {
             <Card>
               <CardBody className="text-center py-12">
                 <div className="text-4xl mb-4">🍳</div>
-                <p className="font-serif text-xl text-espresso mb-2">
+                <p className="font-serif tracking-tighter text-xl text-espresso mb-2">
                   No meals yet
                 </p>
                 <p className="text-espresso/50 font-sans text-sm mb-6">
@@ -133,7 +127,7 @@ export default async function DashboardPage() {
         {/* Past weeks */}
         {weeks.length > 1 && (
           <div>
-            <h2 className="font-serif text-2xl text-espresso mb-4">Past weeks</h2>
+            <h2 className="font-serif tracking-tighter text-2xl text-espresso mb-4">Past weeks</h2>
             <div className="space-y-3">
               {weeks.slice(1).map((week) => (
                 <Link key={week.id} href={`/plan/${week.id}`}>
@@ -184,7 +178,7 @@ function StatCard({
           {label}
         </span>
       </div>
-      <p className="font-serif text-3xl text-espresso">{value}</p>
+      <p className="font-serif tracking-tighter text-3xl text-espresso">{value}</p>
       <p className="text-xs text-espresso/40 font-sans mt-1">{sub}</p>
     </div>
   );

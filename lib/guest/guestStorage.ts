@@ -1,7 +1,8 @@
-import type { MealInput, WeekPlan } from "../validations/schemas";
+import type { MealInput } from "../validations/schemas";
 import { getCurrentWeekStart } from "../utils/weekHelpers";
 
 const STORAGE_KEY = "mealmuse_guest_plan";
+const GENERATION_COUNT_KEY = "mealmuse_guest_generation_count";
 
 export interface GuestPlan {
   weekStartDate: string;
@@ -57,4 +58,28 @@ export function getEmptyGuestPlan(): GuestPlan {
     meals: [],
     savedAt: new Date().toISOString(),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Guest generation counter
+// ---------------------------------------------------------------------------
+
+export function getGuestGenerationCount(): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    return parseInt(localStorage.getItem(GENERATION_COUNT_KEY) ?? "0", 10) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function incrementGuestGenerationCount(): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    const next = getGuestGenerationCount() + 1;
+    localStorage.setItem(GENERATION_COUNT_KEY, String(next));
+    return next;
+  } catch {
+    return 0;
+  }
 }
