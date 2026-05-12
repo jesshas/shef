@@ -4,7 +4,7 @@ import { NutritionSummaryView } from "./NutritionSummary";
 import { DayByDayBreakdown } from "./DayByDayBreakdown";
 import { GroceryList } from "./GroceryList";
 import { GuestSavePrompt } from "./GuestSavePrompt";
-import type { WeekResults, MealInput } from "../../lib/validations/schemas";
+import type { WeekResults, MealInput, GroceryCategory } from "../../lib/validations/schemas";
 import { deriveSummary } from "../../lib/utils/deriveSummary";
 
 interface ResultsViewProps {
@@ -12,6 +12,7 @@ interface ResultsViewProps {
   meals: MealInput[];
   isGuest: boolean;
   onGuestPromptDismiss: () => void;
+  onGroceryUpdate?: (categories: GroceryCategory[]) => Promise<void>;
 }
 
 export function ResultsView({
@@ -19,6 +20,7 @@ export function ResultsView({
   meals,
   isGuest,
   onGuestPromptDismiss,
+  onGroceryUpdate,
 }: ResultsViewProps) {
   const summary = deriveSummary(results.mealNutrition);
 
@@ -52,7 +54,7 @@ export function ResultsView({
       )}
 
       {/* Grocery List */}
-      <GroceryList categories={results.categories} />
+      <GroceryList categories={results.categories} onUpdate={onGroceryUpdate} />
     </div>
   );
 }

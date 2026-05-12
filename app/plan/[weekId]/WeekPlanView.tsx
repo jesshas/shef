@@ -7,6 +7,7 @@ import { MealSlideOver } from "../../../components/meal-grid/MealSlideOver";
 import { ResultsView } from "../../../components/results/ResultsView";
 import { useMealSlideOver } from "../../../hooks/useMealSlideOver";
 import { generateWeekPlanAction } from "../../../lib/actions/generateWeekPlan";
+import { updateGroceryListAction } from "../../../lib/actions/updateGroceryList";
 import { formatWeekRange, generateLocalId } from "../../../lib/utils/weekHelpers";
 import type {
   WeekResults,
@@ -155,6 +156,11 @@ export function WeekPlanView({ week, meals: initialMeals, savedResults, userId }
             meals={meals}
             isGuest={false}
             onGuestPromptDismiss={() => {}}
+            onGroceryUpdate={async (categories) => {
+              const res = await updateGroceryListAction({ weekId: week.id, categories });
+              if (!res.success) throw new Error(res.error);
+              setResults((prev) => prev ? { ...prev, categories } : prev);
+            }}
           />
         )}
       </div>

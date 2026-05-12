@@ -288,6 +288,9 @@ export default function PlanNewPage() {
               meals={meals}
               isGuest={isGuest && !isSignedIn}
               onGuestPromptDismiss={() => setGuestPromptDismissed(true)}
+              onGroceryUpdate={async (categories) => {
+                setResults((prev) => prev ? { ...prev, categories } : prev);
+              }}
             />
           )}
         </div>
