@@ -38,6 +38,7 @@ export async function generateMealsFromPromptAction(
   }
 
   let dietaryPreferences: string[] = [];
+  let servingSize = 1;
 
   if (userId) {
     // Signed-in: check DB aiPromptCount
@@ -47,6 +48,7 @@ export async function generateMealsFromPromptAction(
 
     if (user) {
       dietaryPreferences = (user.dietaryPreferences as string[]) ?? [];
+      servingSize = user.servingSize ?? 1;
 
       if (user.plan !== "pro" && (user.aiPromptCount ?? 0) >= AI_PROMPT_LIMIT) {
         return {
@@ -68,7 +70,7 @@ export async function generateMealsFromPromptAction(
   }
 
   try {
-    const meals = await generateMealsFromPrompt(trimmed, dietaryPreferences);
+    const meals = await generateMealsFromPrompt(trimmed, dietaryPreferences, servingSize);
 
     // Increment counter for signed-in users
     if (userId) {

@@ -8,7 +8,8 @@ import { DIETARY_PREFERENCES } from "../validations/schemas";
 import { z } from "zod";
 
 const preferencesSchema = z.object({
-  dietaryPreferences: z.array(z.enum(DIETARY_PREFERENCES)).max(10),
+  dietaryPreferences: z.array(z.enum(DIETARY_PREFERENCES)).max(13),
+  servingSize: z.number().int().min(1).max(20).optional(),
 });
 
 export interface UpdatePreferencesResult {
@@ -35,7 +36,10 @@ export async function updateDietaryPreferencesAction(
 
   await db
     .update(users)
-    .set({ dietaryPreferences: parsed.data.dietaryPreferences })
+    .set({
+      dietaryPreferences: parsed.data.dietaryPreferences,
+      ...(parsed.data.servingSize !== undefined && { servingSize: parsed.data.servingSize }),
+    })
     .where(eq(users.clerkId, userId));
 
   return { success: true };

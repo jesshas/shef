@@ -38,7 +38,7 @@ export default async function SettingsPage() {
             <p className="text-sm text-espresso/60 font-sans mb-6">
               These are considered by shef when generating your meal plans.
             </p>
-            <PreferencesForm currentPreferences={preferences} />
+            <PreferencesForm currentPreferences={preferences} currentServingSize={user.servingSize ?? 1} />
           </section>
 
           {/* Clerk UserProfile */}

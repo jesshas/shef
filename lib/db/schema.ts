@@ -20,6 +20,7 @@ export const users = pgTable("users", {
     .default([]),
   generationCount: integer("generation_count").notNull().default(0),
   aiPromptCount: integer("ai_prompt_count").notNull().default(0),
+  servingSize: integer("serving_size").notNull().default(1),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
   createdAt: timestamp("created_at").notNull().defaultNow(),

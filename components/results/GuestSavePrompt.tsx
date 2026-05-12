@@ -47,7 +47,7 @@ export function GuestSavePrompt({ onDismiss }: GuestSavePromptProps) {
             Love your plan?
           </p>
           <p className="text-sm text-espresso/70 font-sans mt-1 leading-relaxed">
-            Create a free account to save it, access it anywhere, and plan future weeks — no credit card needed.
+            Create a free account to save it, access it anywhere, and plan future weeks. Set dietary preferences, serving sizes, and save at the grocery store - no card required.
           </p>
           <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
             {["💾 Save & revisit your plans", "🥗 Set dietary preferences", "📋 Full history"].map((perk) => (

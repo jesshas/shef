@@ -29,7 +29,7 @@ export default function PricingPage() {
             Simple pricing
           </h1>
           <p className="text-espresso/60 font-sans text-lg max-w-md mx-auto">
-            Start free. Upgrade when you're ready for more.
+            Start free. Upgrade when you're ready for more. Shef users save over $500/year on groceries — and we think meal planning should be accessible to everyone.
           </p>
         </div>
 

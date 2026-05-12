@@ -39,11 +39,17 @@ export interface GeneratedMealSuggestion {
   notes?: string;
 }
 
-function buildPrompt(userPrompt: string, dietaryPreferences: string[]): string {
+function buildPrompt(userPrompt: string, dietaryPreferences: string[], servingSize: number): string {
   const prefsText =
     dietaryPreferences.length > 0
       ? dietaryPreferences.join(", ")
       : "no specific restrictions";
+
+  const servingText = servingSize === 1
+    ? "1 person"
+    : servingSize >= 6
+    ? "6 or more people"
+    : `${servingSize} people`;
 
   return `You are a meal planning assistant. Based on the user's description and dietary preferences, suggest a full 7-day meal plan.
 
@@ -51,6 +57,7 @@ User's request:
 ${userPrompt}
 
 Dietary preferences: ${prefsText}
+Planning for: ${servingText}
 
 Generate exactly 21 meals covering all 7 days (Monday–Sunday) and all 3 meal types (breakfast, lunch, dinner).
 
@@ -59,6 +66,7 @@ Requirements:
 - Practical, real recipe names (e.g. "Avocado toast with poached eggs", not "Healthy breakfast")
 - Respect all dietary preferences strictly
 - Match the user's stated preferences for cuisine, cooking time, skill level, etc.
+- Choose meals and portion-friendly recipes appropriate for ${servingText}
 - For notes, add a brief 1-sentence tip or substitution hint where useful (optional)
 
 Return ONLY valid JSON, no markdown, no explanation:
@@ -80,9 +88,10 @@ Return all 21 meals.`;
 
 export async function generateMealsFromPrompt(
   userPrompt: string,
-  dietaryPreferences: string[] = []
+  dietaryPreferences: string[] = [],
+  servingSize: number = 1
 ): Promise<GeneratedMealSuggestion[]> {
-  const text = await complete(buildPrompt(userPrompt, dietaryPreferences));
+  const text = await complete(buildPrompt(userPrompt, dietaryPreferences, servingSize));
 
   let parsed: { meals: GeneratedMealSuggestion[] };
   try {
