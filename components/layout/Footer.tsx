@@ -8,12 +8,26 @@ export function Footer() {
           <span className="font-serif text-2xl tracking-tighter text-espresso">shef</span>
         </div>
         <p className="text-sm text-espresso/50 font-sans text-center">
-          Your week, beautifully planned.
+          © MoveClub Inc., LLC
         </p>
         <div className="flex items-center gap-4 text-sm text-espresso/50 font-sans">
           <Link href="/plan/new" className="hover:text-espresso transition-colors">
             Start Planning
           </Link>
+          <a
+            href="https://github.com/jesshas/shef"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-espresso transition-colors"
+          >
+            Contribute
+          </a>
+          <a
+            href="mailto:hello@joinmoveclub.com"
+            className="hover:text-espresso transition-colors"
+          >
+            Contact
+          </a>
         </div>
       </div>
     </footer>

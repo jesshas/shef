@@ -60,7 +60,7 @@ export function WeekGrid({
         </div>
       )}
 
-      <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+      <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 mt-0 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-rose/40 [&::-webkit-scrollbar-thumb]:rounded-full">
         <div className="min-w-[640px]">
           {/* Day headers */}
           <div className="grid grid-cols-8 gap-2 mb-2">
@@ -79,7 +79,7 @@ export function WeekGrid({
 
           {/* Meal rows */}
           {MEAL_TYPES.map((mealType) => (
-            <div key={mealType} className="grid grid-cols-8 gap-2 mb-2">
+            <div key={mealType} className="grid grid-cols-8 gap-2 md:mb-2 mb-6">
               {/* Meal type label */}
               <div className="flex items-center justify-end pr-2 sm:pr-3">
                 <div className="text-right">

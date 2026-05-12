@@ -13,9 +13,16 @@ import { useWeekPlan } from "../../../hooks/useWeekPlan";
 import { useMealSlideOver } from "../../../hooks/useMealSlideOver";
 import { useGuestPlan } from "../../../hooks/useGuestPlan";
 import { generateWeekPlanAction } from "../../../lib/actions/generateWeekPlan";
+import { generateMealsFromPromptAction } from "../../../lib/actions/generateMealsFromPrompt";
 import { formatWeekRange } from "../../../lib/utils/weekHelpers";
-import { getGuestGenerationCount, incrementGuestGenerationCount } from "../../../lib/guest/guestStorage";
-import { FREE_LIMITS } from "../../../lib/utils/checkLimit";
+import {
+  getGuestGenerationCount,
+  incrementGuestGenerationCount,
+  getGuestAiPromptCount,
+  incrementGuestAiPromptCount,
+} from "../../../lib/guest/guestStorage";
+import { FREE_LIMITS, AI_PROMPT_LIMIT } from "../../../lib/utils/checkLimit";
+import { PromptInput } from "../../../components/meal-grid/PromptInput";
 import type { WeekResults, MealInput } from "../../../lib/validations/schemas";
 import { toast } from "sonner";
 
@@ -38,13 +45,16 @@ export default function PlanNewPage() {
   const [copyingMeal, setCopyingMeal] = useState<MealInput | null>(null);
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [generationsUsed, setGenerationsUsed] = useState(0);
+  const [aiPromptsUsed, setAiPromptsUsed] = useState(0);
+  const [isPromptPending, setIsPromptPending] = useState(false);
   const [isPending, startTransition] = useTransition();
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // Hydrate guest generation count from localStorage
+  // Hydrate guest counters from localStorage
   useEffect(() => {
     if (!isSignedIn) {
       setGenerationsUsed(getGuestGenerationCount());
+      setAiPromptsUsed(getGuestAiPromptCount());
     }
   }, [isSignedIn]);
 
@@ -63,6 +73,51 @@ export default function PlanNewPage() {
   const canGenerate = mealCount >= 3;
   const generationLimit = FREE_LIMITS.generations;
   const generationsRemaining = Math.max(0, generationLimit - generationsUsed);
+  // isPro isn't available client-side without a separate fetch, so we optimistically
+  // allow use and let the server action enforce the limit for signed-in users
+  const isPro = false; // server enforces; set to true only if you pass plan from server
+
+  async function handlePromptGenerate(prompt: string) {
+    setIsPromptPending(true);
+    const loadingToastId = toast.loading("✨ Shef is planning your week…", {
+      description: "Writing your full meal plan from scratch",
+    });
+    try {
+      const result = await generateMealsFromPromptAction({
+        userPrompt: prompt,
+        guestAiPromptCount: isSignedIn ? undefined : aiPromptsUsed,
+      });
+      toast.dismiss(loadingToastId);
+
+      if (result.success && result.meals) {
+        // Replace all meals in the grid
+        result.meals.forEach((m) => {
+          addMeal({
+            dayOfWeek: m.dayOfWeek,
+            mealType: m.mealType,
+            title: m.title,
+            notes: m.notes,
+          });
+        });
+
+        if (!isSignedIn) {
+          incrementGuestAiPromptCount();
+          setAiPromptsUsed(getGuestAiPromptCount());
+        }
+
+        toast.success("Your week is filled! Review and generate nutrition + grocery list. 🌿");
+      } else if (result.errorCode === "prompt_limit") {
+        setShowLimitModal(true);
+      } else {
+        toast.error(result.error ?? "Something went wrong. Please try again.");
+      }
+    } catch {
+      toast.dismiss(loadingToastId);
+      toast.error("Couldn't generate meal ideas. Check your connection and try again.");
+    } finally {
+      setIsPromptPending(false);
+    }
+  }
 
   function handleGenerate() {
     if (!canGenerate) return;
@@ -142,8 +197,19 @@ export default function PlanNewPage() {
           </p>
         </div>
 
+        {/* AI Prompt Input */}
+        <div className="mb-6">
+          <PromptInput
+            onGenerate={handlePromptGenerate}
+            isLoading={isPromptPending}
+            promptsUsed={aiPromptsUsed}
+            promptLimit={AI_PROMPT_LIMIT}
+            isPro={isPro}
+          />
+        </div>
+
         {/* Meal Grid */}
-        <div className="mb-10">
+        <div className="md:mb-10 mb-0">
           <WeekGrid
             getMealForSlot={getMealForSlot}
             onCellClick={openSlideOver}

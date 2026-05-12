@@ -19,6 +19,13 @@ export const DIETARY_PREFERENCES = [
   "dairy-free",
   "low-carb",
   "high-protein",
+  "ketogenic",
+  "low-fodmap",
+  "paleo",
+  "intermittent-fasting",
+  "kosher",
+  "diabetes-friendly",
+  "glp-1",
 ] as const;
 
 export const mealSchema = z.object({

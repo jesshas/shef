@@ -17,6 +17,13 @@ const PREFERENCE_LABELS: Record<string, string> = {
   "dairy-free": "🥛 Dairy-Free",
   "low-carb": "🥩 Low-Carb",
   "high-protein": "💪 High-Protein",
+  ketogenic: "🔥 Ketogenic",
+  "low-fodmap": "🫁 Low FODMAP",
+  paleo: "🦴 Paleo",
+  "intermittent-fasting": "⏱️ Intermittent Fasting",
+  kosher: "✡️ Kosher",
+  "diabetes-friendly": "🩺 Diabetes-Friendly",
+  "glp-1": "💉 GLP-1",
 };
 
 export function PreferencesForm({ currentPreferences }: PreferencesFormProps) {

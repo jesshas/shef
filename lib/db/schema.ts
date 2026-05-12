@@ -19,6 +19,7 @@ export const users = pgTable("users", {
     .$type<string[]>()
     .default([]),
   generationCount: integer("generation_count").notNull().default(0),
+  aiPromptCount: integer("ai_prompt_count").notNull().default(0),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
   createdAt: timestamp("created_at").notNull().defaultNow(),

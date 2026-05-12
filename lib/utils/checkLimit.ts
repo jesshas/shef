@@ -8,6 +8,8 @@ export const FREE_LIMITS = {
   generations: 4,
 } as const;
 
+export const AI_PROMPT_LIMIT = 1;
+
 type LimitType = keyof typeof FREE_LIMITS;
 
 export interface LimitCheck {

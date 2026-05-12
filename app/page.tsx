@@ -67,40 +67,61 @@ export default function LandingPage() {
 
         {/* Hero illustration */}
         <div className="mt-16 sm:mt-24 max-w-4xl w-full mx-auto">
-          <div className="relative bg-white/60 backdrop-blur border border-rose/20 rounded-3xl shadow-xl p-6 sm:p-8">
-            <div className="grid grid-cols-7 gap-2">
-              {/* Day headers */}
-              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-                <div
-                  key={d}
-                  className="text-center text-[10px] font-sans font-semibold text-espresso/40 uppercase tracking-wider py-1"
-                >
-                  {d}
-                </div>
-              ))}
-              {/* Sample meal cells */}
-              {DEMO_MEALS.map((meal, i) => (
-                <div
-                  key={i}
-                  className={[
-                    "rounded-lg p-2 text-center text-[10px] font-sans leading-tight",
-                    meal.empty
-                      ? "border-2 border-dashed border-rose/20"
-                      : "bg-white border border-rose/30 shadow-sm",
-                  ].join(" ")}
-                >
-                  {!meal.empty && (
-                    <span className="text-espresso/70 line-clamp-2">{meal.title}</span>
-                  )}
-                </div>
-              ))}
+          <div className="relative bg-white/60 backdrop-blur border border-rose/20 rounded-3xl shadow-xl p-4 sm:p-8">
+
+            {/* Mobile: 3-day preview */}
+            <div className="sm:hidden">
+              <div className="grid grid-cols-3 gap-2">
+                {["Monday", "Wednesday", "Friday"].map((d) => (
+                  <div key={d} className="text-center text-[10px] font-sans font-semibold text-espresso/40 uppercase tracking-wider py-1">
+                    {d.slice(0, 3)}
+                  </div>
+                ))}
+                {DEMO_MEALS_MOBILE.map((meal, i) => (
+                  <div
+                    key={i}
+                    className="bg-white border border-rose/30 shadow-sm rounded-xl p-3 text-center"
+                  >
+                    <span className="text-xs font-sans text-espresso/70 leading-tight line-clamp-2">{meal.title}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="mt-6 flex items-center justify-between">
-              <div className="text-sm text-espresso/50 font-sans">
+            {/* Desktop: full 7-day grid */}
+            <div className="hidden sm:block">
+              <div className="grid grid-cols-7 gap-2">
+                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+                  <div
+                    key={d}
+                    className="text-center text-[10px] font-sans font-semibold text-espresso/40 uppercase tracking-wider py-1"
+                  >
+                    {d}
+                  </div>
+                ))}
+                {DEMO_MEALS.map((meal, i) => (
+                  <div
+                    key={i}
+                    className={[
+                      "rounded-lg p-2 text-center text-[10px] font-sans leading-tight",
+                      meal.empty
+                        ? "border-2 border-dashed border-rose/20"
+                        : "bg-white border border-rose/30 shadow-sm",
+                    ].join(" ")}
+                  >
+                    {!meal.empty && (
+                      <span className="text-espresso/70 line-clamp-2">{meal.title}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4 sm:mt-6 flex items-center justify-between">
+              <div className="text-xs sm:text-sm text-espresso/50 font-sans">
                 21 meals · 3 days filled
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-espresso text-cream text-xs font-sans font-semibold rounded-xl">
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-espresso text-cream text-xs font-sans font-semibold rounded-xl">
                 ✨ Generate My Week
               </div>
             </div>
@@ -231,7 +252,20 @@ export default function LandingPage() {
   );
 }
 
-// Demo meal grid data
+// Demo meal grid — mobile (3 days × 3 meal types, all filled)
+const DEMO_MEALS_MOBILE = [
+  { title: "Avocado toast" },
+  { title: "Greek yogurt bowl" },
+  { title: "Eggs & sourdough" },
+  { title: "Caesar salad" },
+  { title: "Grain bowl" },
+  { title: "Soup & bread" },
+  { title: "Pasta arrabbiata" },
+  { title: "Roast chicken" },
+  { title: "Thai curry" },
+];
+
+// Demo meal grid — desktop (7 days × 3 meal types)
 const DEMO_MEALS = [
   { title: "Avocado toast", empty: false },
   { title: "", empty: true },

@@ -3,6 +3,7 @@ import { getCurrentWeekStart } from "../utils/weekHelpers";
 
 const STORAGE_KEY = "mealmuse_guest_plan";
 const GENERATION_COUNT_KEY = "mealmuse_guest_generation_count";
+const AI_PROMPT_COUNT_KEY = "mealmuse_guest_ai_prompt_count";
 
 export interface GuestPlan {
   weekStartDate: string;
@@ -78,6 +79,30 @@ export function incrementGuestGenerationCount(): number {
   try {
     const next = getGuestGenerationCount() + 1;
     localStorage.setItem(GENERATION_COUNT_KEY, String(next));
+    return next;
+  } catch {
+    return 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Guest AI prompt counter
+// ---------------------------------------------------------------------------
+
+export function getGuestAiPromptCount(): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    return parseInt(localStorage.getItem(AI_PROMPT_COUNT_KEY) ?? "0", 10) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function incrementGuestAiPromptCount(): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    const next = getGuestAiPromptCount() + 1;
+    localStorage.setItem(AI_PROMPT_COUNT_KEY, String(next));
     return next;
   } catch {
     return 0;

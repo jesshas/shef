@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description:
     "AI-powered meal planning that feels like a beautiful recipe journal. Plan your week, get a smart grocery list, and see your nutrition at a glance.",
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>",
+    icon: "/favicon.ico",
   },
 };
 
