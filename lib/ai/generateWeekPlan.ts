@@ -103,6 +103,52 @@ Extract the recipe information and return ONLY valid JSON:
 If you cannot access the URL or determine the information, return null for each field.`;
 }
 
+function recipeDetailsPrompt(title: string, recipeUrl?: string, notes?: string): string {
+  const context = [
+    recipeUrl ? `Recipe URL: ${recipeUrl}` : null,
+    notes ? `Notes: ${notes}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return `Generate a concise recipe for: "${title}"
+${context}
+
+Return ONLY valid JSON, no markdown:
+{
+  "ingredients": [
+    "quantity + unit + ingredient (e.g. '2 cups all-purpose flour')"
+  ],
+  "steps": [
+    "Brief step (1-2 sentences)"
+  ]
+}
+
+Requirements:
+- 6–12 ingredients
+- 4–7 steps, each 1–2 sentences, practical and actionable
+- Match the dish — don't invent unrelated ingredients
+- If a URL was provided, use exact recipe from URL.`;
+}
+
+export interface RecipeDetails {
+  ingredients: string[];
+  steps: string[];
+}
+
+export async function generateRecipeDetails(
+  title: string,
+  recipeUrl?: string,
+  notes?: string
+): Promise<RecipeDetails> {
+  const text = await complete(recipeDetailsPrompt(title, recipeUrl, notes));
+  const parsed = JSON.parse(text) as RecipeDetails;
+  if (!Array.isArray(parsed.ingredients) || !Array.isArray(parsed.steps)) {
+    throw new Error("Invalid recipe details response");
+  }
+  return parsed;
+}
+
 // ---------------------------------------------------------------------------
 // Provider-specific completions
 // ---------------------------------------------------------------------------

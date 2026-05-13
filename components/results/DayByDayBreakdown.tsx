@@ -5,6 +5,7 @@ import type { MealInput, MealNutrition } from "../../lib/validations/schemas";
 import { DAYS_OF_WEEK, MEAL_TYPES } from "../../lib/validations/schemas";
 import type { DayOfWeek } from "../../lib/validations/schemas";
 import { saveRecipeAction } from "../../lib/actions/saveRecipe";
+import { MealRecipeDetails } from "./MealRecipeDetails";
 import { toast } from "sonner";
 import { useState } from "react";
 
@@ -141,6 +142,13 @@ export function DayByDayBreakdown({ meals, mealNutrition, isSignedIn = false }: 
                       <Badge variant="estimate">AI estimate</Badge>
                     </div>
                   )}
+
+                  <MealRecipeDetails
+                    mealId={meal.id}
+                    title={meal.title}
+                    recipeUrl={meal.recipeUrl}
+                    notes={meal.notes}
+                  />
                 </div>
               );
             }
