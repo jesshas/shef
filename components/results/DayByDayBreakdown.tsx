@@ -1,12 +1,17 @@
 import { Accordion } from "../ui/Accordion";
 import { Badge } from "../ui/Badge";
+import { Bookmark, BookmarkCheck } from "lucide-react";
 import type { MealInput, MealNutrition } from "../../lib/validations/schemas";
 import { DAYS_OF_WEEK, MEAL_TYPES } from "../../lib/validations/schemas";
 import type { DayOfWeek } from "../../lib/validations/schemas";
+import { saveRecipeAction } from "../../lib/actions/saveRecipe";
+import { toast } from "sonner";
+import { useState } from "react";
 
 interface DayByDayBreakdownProps {
   meals: MealInput[];
   mealNutrition: MealNutrition[];
+  isSignedIn?: boolean;
 }
 
 const MEAL_EMOJIS: Record<string, string> = {
@@ -15,8 +20,26 @@ const MEAL_EMOJIS: Record<string, string> = {
   dinner: "",
 };
 
-export function DayByDayBreakdown({ meals, mealNutrition }: DayByDayBreakdownProps) {
+export function DayByDayBreakdown({ meals, mealNutrition, isSignedIn = false }: DayByDayBreakdownProps) {
   const nutritionByMealId = new Map(mealNutrition.map((n) => [n.mealId, n]));
+  const [savedMealIds, setSavedMealIds] = useState<Set<string>>(new Set());
+
+  async function handleSaveRecipe(meal: MealInput) {
+    if (!meal.recipeUrl) return;
+    try {
+      const result = await saveRecipeAction({ title: meal.title, url: meal.recipeUrl, notes: meal.notes ?? "", tags: [] });
+      if (result.success) {
+        setSavedMealIds((prev) => new Set(prev).add(meal.id));
+        toast.success("Recipe saved! 🌿");
+      } else if (result.limitReached) {
+        toast.error("Recipe limit reached", { description: "Upgrade to Pro to save unlimited recipes." });
+      } else {
+        toast.error(result.error ?? "Couldn't save recipe");
+      }
+    } catch {
+      toast.error("Couldn't save recipe");
+    }
+  }
 
   const days = DAYS_OF_WEEK.filter((day) =>
     meals.some((m) => m.dayOfWeek === day)
@@ -71,14 +94,28 @@ export function DayByDayBreakdown({ meals, mealNutrition }: DayByDayBreakdownPro
                         {meal.title}
                       </p>
                       {meal.recipeUrl && (
-                        <a
-                          href={meal.recipeUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-sage hover:text-sage-dark transition-colors mt-0.5 inline-block"
-                        >
-                          View recipe ↗
-                        </a>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <a
+                            href={meal.recipeUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-sage hover:text-sage-dark transition-colors inline-block"
+                          >
+                            View recipe ↗
+                          </a>
+                          {isSignedIn && (
+                            <button
+                              type="button"
+                              onClick={() => handleSaveRecipe(meal)}
+                              disabled={savedMealIds.has(meal.id)}
+                              className="inline-flex items-center gap-1 text-xs text-espresso/40 hover:text-espresso/70 transition-colors disabled:cursor-default"
+                              title={savedMealIds.has(meal.id) ? "Saved" : "Save to Recipes"}
+                            >
+                              {savedMealIds.has(meal.id) ? <BookmarkCheck size={11} className="text-sage" /> : <Bookmark size={11} />}
+                              {savedMealIds.has(meal.id) ? "Saved" : "Save"}
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                     {nutrition && (

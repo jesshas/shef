@@ -46,7 +46,7 @@ export function ResultsView({
       <NutritionSummaryView summary={summary} />
 
       {/* Day-by-Day Breakdown */}
-      <DayByDayBreakdown meals={meals} mealNutrition={results.mealNutrition} />
+      <DayByDayBreakdown meals={meals} mealNutrition={results.mealNutrition} isSignedIn={!isGuest} />
 
       {/* Guest Save Prompt (before grocery list) */}
       {isGuest && (

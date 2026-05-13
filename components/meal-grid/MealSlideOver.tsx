@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { SlideOver } from "../ui/SlideOver";
 import { Button } from "../ui/Button";
 import { Input, Textarea } from "../ui/Input";
-import { ExternalLink, Copy, Trash2 } from "lucide-react";
+import { ExternalLink, Copy, Trash2, Bookmark, BookmarkCheck } from "lucide-react";
 import type { DayOfWeek, MealInput, MealType } from "../../lib/validations/schemas";
+import { saveRecipeAction } from "../../lib/actions/saveRecipe";
+import { toast } from "sonner";
 import { formatMealType } from "../../lib/utils/weekHelpers";
 
 interface MealSlideOverProps {
@@ -54,6 +56,31 @@ export function MealSlideOver({
   const [recipeUrl, setRecipeUrl] = useState(existingMeal?.recipeUrl ?? "");
   const [notes, setNotes] = useState(existingMeal?.notes ?? "");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSavingRecipe, setIsSavingRecipe] = useState(false);
+  const [recipeSaved, setRecipeSaved] = useState(false);
+
+  async function handleSaveToRecipes() {
+    if (!existingMeal?.recipeUrl || !existingMeal?.title) return;
+    setIsSavingRecipe(true);
+    try {
+      const result = await saveRecipeAction({
+        title: existingMeal.title,
+        url: existingMeal.recipeUrl,
+        notes: existingMeal.notes ?? "",
+        tags: [],
+      });
+      if (result.success) {
+        setRecipeSaved(true);
+        toast.success("Recipe saved! 🌿");
+      } else if (result.limitReached) {
+        toast.error("Recipe limit reached", { description: "Upgrade to Pro to save unlimited recipes." });
+      } else {
+        toast.error(result.error ?? "Couldn't save recipe");
+      }
+    } finally {
+      setIsSavingRecipe(false);
+    }
+  }
 
   // Reset form whenever the slide-over opens for a new slot
   useEffect(() => {
@@ -62,6 +89,7 @@ export function MealSlideOver({
       setRecipeUrl(existingMeal?.recipeUrl ?? "");
       setNotes(existingMeal?.notes ?? "");
       setErrors({});
+      setRecipeSaved(false);
     }
   }, [isOpen, existingMeal]);
 
@@ -110,6 +138,22 @@ export function MealSlideOver({
                 <ExternalLink size={11} />
                 Open recipe
               </a>
+            )}
+            {existingMeal.recipeUrl && (
+              <button
+                type="button"
+                onClick={handleSaveToRecipes}
+                disabled={isSavingRecipe || recipeSaved}
+                className={[
+                  "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-sans rounded-full border transition-colors",
+                  recipeSaved
+                    ? "border-sage/40 bg-sage-light/30 text-sage-dark cursor-default"
+                    : "border-espresso/20 bg-linen text-espresso/70 hover:bg-linen hover:text-espresso",
+                ].join(" ")}
+              >
+                {recipeSaved ? <BookmarkCheck size={11} /> : <Bookmark size={11} />}
+                {recipeSaved ? "Saved" : "Save to Recipes"}
+              </button>
             )}
             {onStartCopy && (
               <button
