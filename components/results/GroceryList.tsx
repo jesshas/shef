@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Copy, Printer, Check, Plus, Save, Loader2 } from "lucide-react";
+import { Copy, Printer, Check, Plus, Save, ShoppingCart } from "lucide-react";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { Button } from "../ui/Button";
 import { GroceryItem } from "./GroceryItem";
@@ -48,14 +48,68 @@ function AddItemRow({ onAdd, onCancel }: AddItemRowProps) {
       <button
         onClick={handleConfirm}
         disabled={!draft.name.trim()}
-        className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg bg-sage/20 hover:bg-sage/40 text-sage transition-colors disabled:opacity-40"
+        className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg bg-sage/20 hover:bg-sage/40 text-sage transition-colors disabled:opacity-40"
         aria-label="Add item"
       >
         <Check size={14} strokeWidth={2.5} />
       </button>
       <button
         onClick={onCancel}
-        className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-rose/20 text-espresso/40 hover:text-espresso/70 transition-colors"
+        className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-rose/20 text-espresso/40 hover:text-espresso/70 transition-colors"
+        aria-label="Cancel"
+      >
+        ✕
+      </button>
+    </div>
+  );
+}
+
+const SUGGESTED_CATEGORIES = [
+  "Produce", "Protein", "Dairy", "Grains", "Pantry", "Frozen", "Beverages", "Herbs & Spices", "Other",
+];
+
+interface AddCategoryRowProps {
+  existingNames: string[];
+  onAdd: (name: string) => void;
+  onCancel: () => void;
+}
+
+function AddCategoryRow({ existingNames, onAdd, onCancel }: AddCategoryRowProps) {
+  const [draft, setDraft] = useState("");
+
+  const available = SUGGESTED_CATEGORIES.filter((c) => !existingNames.includes(c));
+
+  function handleConfirm() {
+    const name = draft.trim();
+    if (!name || existingNames.includes(name)) return;
+    onAdd(name);
+  }
+
+  return (
+    <div className="flex items-center gap-2 pt-4 border-t border-rose/10">
+      <input
+        autoFocus
+        list="category-suggestions"
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") onCancel(); }}
+        placeholder="Section name (e.g. Produce)"
+        className="flex-1 min-w-0 text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-1 focus:outline-none focus:border-rose"
+      />
+      <datalist id="category-suggestions">
+        {available.map((c) => <option key={c} value={c} />)}
+      </datalist>
+      <button
+        onClick={handleConfirm}
+        disabled={!draft.trim() || existingNames.includes(draft.trim())}
+        className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg bg-sage/20 hover:bg-sage/40 text-sage transition-colors disabled:opacity-40"
+        aria-label="Add section"
+      >
+        <Check size={14} strokeWidth={2.5} />
+      </button>
+      <button
+        onClick={onCancel}
+        className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-rose/20 text-espresso/40 hover:text-espresso/70 transition-colors"
         aria-label="Cancel"
       >
         ✕
@@ -86,6 +140,7 @@ export function GroceryList({ categories: initialCategories, onUpdate }: Grocery
   const [copied, setCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [addingTo, setAddingTo] = useState<string | null>(null);
+  const [addingCategory, setAddingCategory] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
   const mutate = useCallback((updater: (prev: GroceryCategory[]) => GroceryCategory[]) => {
@@ -122,6 +177,12 @@ export function GroceryList({ categories: initialCategories, onUpdate }: Grocery
       )
     );
     setAddingTo(null);
+  }
+
+  function handleAddCategory(name: string) {
+    mutate((prev) => [...prev, { name, items: [] }]);
+    setAddingCategory(false);
+    setAddingTo(name);
   }
 
   async function handleSave() {
@@ -204,14 +265,30 @@ export function GroceryList({ categories: initialCategories, onUpdate }: Grocery
       </CardHeader>
 
       <CardBody>
+        {localCategories.length === 0 && !addingCategory && (
+          <div className="text-center py-10">
+            <ShoppingCart size={28} className="text-espresso/20 mx-auto mb-3" />
+            <p className="font-serif tracking-tighter text-lg text-espresso mb-1">Empty list</p>
+            <p className="text-sm text-espresso/50 font-sans mb-5">Add a section to start building your list.</p>
+            {onUpdate && (
+              <button
+                onClick={() => setAddingCategory(true)}
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-sans font-medium bg-espresso text-cream rounded-xl hover:bg-espresso/80 transition-colors"
+              >
+                <Plus size={14} />
+                Add section
+              </button>
+            )}
+          </div>
+        )}
         <div className="grid sm:grid-cols-2 gap-6">
           {localCategories.map((category) => (
             <div key={category.name}>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-lg">
+              <div className="flex items-baseline gap-2 mb-3">
+                <span className="text-lg leading-none">
                   {CATEGORY_EMOJIS[category.name] ?? "🛒"}
                 </span>
-                <h3 className="font-serif tracking-tighter text-base text-espresso">
+                <h3 className="font-serif tracking-tighter text-base leading-none text-espresso">
                   {category.name}
                 </h3>
                 <span className="text-xs text-espresso/40 font-sans">
@@ -251,6 +328,33 @@ export function GroceryList({ categories: initialCategories, onUpdate }: Grocery
             </div>
           ))}
         </div>
+
+        {/* Add section */}
+        {onUpdate && localCategories.length > 0 && (
+          addingCategory ? (
+            <AddCategoryRow
+              existingNames={localCategories.map((c) => c.name)}
+              onAdd={handleAddCategory}
+              onCancel={() => setAddingCategory(false)}
+            />
+          ) : (
+            <button
+              onClick={() => setAddingCategory(true)}
+              className="flex items-center gap-1.5 mt-4 text-xs font-sans text-espresso/40 hover:text-espresso/70 transition-colors"
+            >
+              <Plus size={12} />
+              Add section
+            </button>
+          )
+        )}
+
+        {onUpdate && localCategories.length === 0 && addingCategory && (
+          <AddCategoryRow
+            existingNames={[]}
+            onAdd={handleAddCategory}
+            onCancel={() => setAddingCategory(false)}
+          />
+        )}
       </CardBody>
     </Card>
   );
