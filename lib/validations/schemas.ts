@@ -52,6 +52,8 @@ export const saveRecipeSchema = z.object({
   url: z.string().url().optional().or(z.literal("")),
   notes: z.string().max(500).optional(),
   tags: z.array(z.string()).max(10).default([]),
+  ingredients: z.array(z.string().max(300)).max(100).optional(),
+  steps: z.array(z.string().max(1000)).max(50).optional(),
 });
 
 export const waitlistSchema = z.object({

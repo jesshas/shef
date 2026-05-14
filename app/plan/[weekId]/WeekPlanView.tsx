@@ -8,6 +8,8 @@ import { ResultsView } from "../../../components/results/ResultsView";
 import { useMealSlideOver } from "../../../hooks/useMealSlideOver";
 import { generateWeekPlanAction } from "../../../lib/actions/generateWeekPlan";
 import { updateGroceryListAction } from "../../../lib/actions/updateGroceryList";
+import { createGroceryShareTokenAction } from "../../../lib/actions/shareTokens";
+import { ShareButton } from "../../../components/ui/ShareButton";
 import { formatWeekRange, generateLocalId } from "../../../lib/utils/weekHelpers";
 import type {
   WeekResults,
@@ -151,17 +153,30 @@ export function WeekPlanView({ week, meals: initialMeals, savedResults, userId }
 
       <div ref={resultsRef}>
         {results && (
-          <ResultsView
-            results={results}
-            meals={meals}
-            isGuest={false}
-            onGuestPromptDismiss={() => {}}
-            onGroceryUpdate={async (categories) => {
-              const res = await updateGroceryListAction({ weekId: week.id, categories });
-              if (!res.success) throw new Error(res.error);
-              setResults((prev) => prev ? { ...prev, categories } : prev);
-            }}
-          />
+          <>
+            <div className="flex items-center justify-end mb-4">
+              <ShareButton
+                label="Share grocery list"
+                shareUrlPath="/share/grocery"
+                onGetToken={async () => {
+                  const res = await createGroceryShareTokenAction(week.id);
+                  if (!res.success || !res.token) throw new Error(res.error);
+                  return res.token;
+                }}
+              />
+            </div>
+            <ResultsView
+              results={results}
+              meals={meals}
+              isGuest={false}
+              onGuestPromptDismiss={() => {}}
+              onGroceryUpdate={async (categories) => {
+                const res = await updateGroceryListAction({ weekId: week.id, categories });
+                if (!res.success) throw new Error(res.error);
+                setResults((prev) => prev ? { ...prev, categories } : prev);
+              }}
+            />
+          </>
         )}
       </div>
 

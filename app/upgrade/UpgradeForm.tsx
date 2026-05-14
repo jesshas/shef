@@ -153,7 +153,7 @@ export function UpgradeForm({ priceId, planLabel, priceLabel }: UpgradeFormProps
           },
           rules: {
             ".Input": {
-              border: "1px solid #E8C4B8",
+              border: "1px solid #DBBF9E",
               boxShadow: "none",
               padding: "12px 14px",
             },
@@ -168,7 +168,7 @@ export function UpgradeForm({ priceId, planLabel, priceLabel }: UpgradeFormProps
               opacity: "0.6",
             },
             ".Tab": {
-              border: "1px solid #E8C4B8",
+              border: "1px solid #DBBF9E",
             },
             ".Tab--selected": {
               border: "1px solid #2C1A0E",

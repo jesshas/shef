@@ -57,6 +57,8 @@ export async function saveRecipeAction(
       url: parsed.data.url || null,
       notes: parsed.data.notes || null,
       tags: parsed.data.tags,
+      ingredients: parsed.data.ingredients ?? [],
+      steps: parsed.data.steps ?? [],
     })
     .returning();
 

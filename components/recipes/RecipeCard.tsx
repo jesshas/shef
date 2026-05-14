@@ -1,5 +1,9 @@
+"use client";
+
 import { Badge } from "../ui/Badge";
 import { BookOpen, ExternalLink } from "lucide-react";
+import { ShareButton } from "../ui/ShareButton";
+import { createRecipeShareTokenAction } from "../../lib/actions/shareTokens";
 import type { SavedRecipe } from "../../lib/db/schema";
 
 interface RecipeCardProps {
@@ -72,10 +76,55 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         </div>
       )}
 
-      {/* Date */}
-      <p className="text-[10px] text-espresso/30 font-sans mt-3">
-        Saved {new Date(recipe.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-      </p>
+      {/* Ingredients */}
+      {recipe.ingredients && recipe.ingredients.length > 0 && (
+        <div className="mt-3">
+          <p className="text-xs font-sans font-semibold text-espresso/60 uppercase tracking-wide mb-1.5">
+            Ingredients
+          </p>
+          <ul className="space-y-0.5">
+            {recipe.ingredients.map((item, i) => (
+              <li key={i} className="text-sm font-sans text-espresso/80 flex gap-2">
+                <span className="text-sage mt-0.5">·</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Steps */}
+      {recipe.steps && recipe.steps.length > 0 && (
+        <div className="mt-3">
+          <p className="text-xs font-sans font-semibold text-espresso/60 uppercase tracking-wide mb-1.5">
+            Instructions
+          </p>
+          <ol className="space-y-1">
+            {recipe.steps.map((step, i) => (
+              <li key={i} className="text-sm font-sans text-espresso/80 flex gap-2">
+                <span className="text-sage font-semibold shrink-0">{i + 1}.</span>
+                {step}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {/* Date + Share */}
+      <div className="flex flex-col gap-2 mt-3">
+        <p className="text-[10px] text-espresso/30 font-sans">
+          Saved {new Date(recipe.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+        </p>
+        <ShareButton
+          label="Share"
+          shareUrlPath="/share/recipe"
+          onGetToken={async () => {
+            const res = await createRecipeShareTokenAction(recipe.id);
+            if (!res.success || !res.token) throw new Error(res.error);
+            return res.token;
+          }}
+        />
+      </div>
     </div>
   );
 }

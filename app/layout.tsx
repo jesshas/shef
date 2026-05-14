@@ -93,7 +93,7 @@ export default function RootLayout({
               style: {
                 background: "#FAF7F2",
                 color: "#2C1A0E",
-                border: "1px solid #E8C4B8",
+                border: "1px solid #DBBF9E",
                 borderRadius: "12px",
                 fontFamily: "var(--font-dm-sans, DM Sans, sans-serif)",
               },

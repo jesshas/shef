@@ -69,6 +69,7 @@ export const weekResults = pgTable("week_results", {
   groceryList: jsonb("grocery_list").notNull(),
   nutritionSummary: jsonb("nutrition_summary").notNull(),
   perMealNutrition: jsonb("per_meal_nutrition").notNull(),
+  shareToken: text("share_token").unique(),
   generatedAt: timestamp("generated_at").notNull().defaultNow(),
 });
 
@@ -80,9 +81,24 @@ export const savedRecipes = pgTable("saved_recipes", {
   title: text("title").notNull(),
   url: text("url"),
   notes: text("notes"),
+  ingredients: text("ingredients").array().default([]),
+  steps: text("steps").array().default([]),
   nutritionSnapshot: jsonb("nutrition_snapshot"),
   tags: text("tags").array().default([]),
+  shareToken: text("share_token").unique(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const manualGroceryLists = pgTable("manual_grocery_lists", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  categories: jsonb("categories").notNull().default([]),
+  shareToken: text("share_token").unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const waitlist = pgTable("waitlist", {
@@ -101,3 +117,5 @@ export type NewMeal = typeof meals.$inferInsert;
 export type WeekResult = typeof weekResults.$inferSelect;
 export type SavedRecipe = typeof savedRecipes.$inferSelect;
 export type NewSavedRecipe = typeof savedRecipes.$inferInsert;
+export type ManualGroceryList = typeof manualGroceryLists.$inferSelect;
+export type NewManualGroceryList = typeof manualGroceryLists.$inferInsert;

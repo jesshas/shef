@@ -44,12 +44,12 @@ export default function LandingPage() {
           {/* Headline */}
           <h1 className="font-serif tracking-tighter text-5xl sm:text-6xl lg:text-7xl text-espresso leading-tight mb-6">
             Your week,{" "}
-            <span className=" text-rose-dark">beautifully</span>{" "}
-            planned.
+            <span className=" text-rose-dark">plated.</span>{" "}
+            
           </h1>
 
           <p className="text-lg sm:text-xl text-espresso/60 font-sans leading-relaxed max-w-xl mx-auto mb-10">
-            shef turns your favorite meals into a full week plan — complete with a smart grocery list and nutrition breakdown.
+            shef turns your favorite meals into a full week plan — complete with a smart, shareable grocery list and nutrition breakdown.
           </p>
 
           {/* CTA */}
@@ -192,7 +192,7 @@ export default function LandingPage() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="font-serif tracking-tighter text-xl text-espresso">Grocery List</h3>
-                  <p className="text-xs text-espresso/50 font-sans mt-0.5">Consolidated for the whole week</p>
+                  <p className="text-xs text-espresso/50 font-sans mt-0.5">Consolidated for the whole week. Shareable and collaborative.</p>
                 </div>
                 <span className="text-2xl">🛒</span>
               </div>
@@ -227,6 +227,87 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Features */}
+      <section className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-cream border border-rose/40 rounded-full text-xs font-sans font-medium text-espresso/70 mb-6 shadow-sm">
+              <span>🤝</span>
+              Plan together
+            </div>
+            <h2 className="font-serif tracking-tighter text-4xl text-espresso mb-4">
+              Share your list. Cook together.
+            </h2>
+            <p className="text-espresso/60 font-sans text-lg max-w-xl mx-auto">
+              Generate a shareable link for your grocery list — anyone with the link can check items off and add what they need. No account required to collaborate.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-6 mb-12">
+            {SHARE_FEATURES.map(({ emoji, title, description }) => (
+              <div key={title} className="bg-white border border-rose/20 rounded-2xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                <div className="text-3xl mb-4">{emoji}</div>
+                <h3 className="font-serif tracking-tighter text-lg text-espresso mb-2">{title}</h3>
+                <p className="text-sm text-espresso/60 font-sans leading-relaxed">{description}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Share flow mockup */}
+          <div className="bg-linen/60 border border-rose/20 rounded-3xl p-6 sm:p-8">
+            <div className="grid sm:grid-cols-2 gap-8 items-center">
+              <div>
+                <p className="text-[11px] font-sans font-semibold text-espresso/40 uppercase tracking-wider mb-3">How it works</p>
+                <ol className="space-y-4">
+                  {SHARE_STEPS.map(({ step, text }) => (
+                    <li key={step} className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-espresso text-cream text-xs font-sans font-semibold flex items-center justify-center mt-0.5">{step}</span>
+                      <p className="text-sm font-sans text-espresso/70 leading-relaxed">{text}</p>
+                    </li>
+                  ))}
+                </ol>
+                <div className="mt-6">
+                  <Link
+                    href="/sign-up"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-espresso text-cream font-sans font-semibold text-sm rounded-xl hover:bg-espresso-light transition-all hover:-translate-y-0.5 hover:shadow-md"
+                  >
+                    Create a free account
+                  </Link>
+                </div>
+              </div>
+
+              {/* Mini grocery share preview */}
+              <div className="bg-white rounded-2xl border border-rose/20 p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="font-serif tracking-tighter text-base text-espresso">Grocery List</p>
+                    <p className="text-[10px] text-espresso/40 font-sans">Week of May 19 – 25</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-linen border border-rose/20 rounded-full text-[10px] font-sans text-espresso/60">
+                    <span>🔗</span> Shared
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  {DEMO_SHARED_ITEMS.map(({ label, checked }) => (
+                    <div key={label} className="flex items-center gap-2.5">
+                      <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${checked ? "bg-sage border-sage" : "border-rose/30"}`}>
+                        {checked && <span className="text-white text-[8px]">✓</span>}
+                      </div>
+                      <span className={`text-xs font-sans ${checked ? "line-through text-espresso/30" : "text-espresso/70"}`}>{label}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 pt-3 border-t border-rose/10">
+                  <div className="flex items-center gap-1.5 text-[10px] font-sans text-espresso/40">
+                    <span>+</span> Add item
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="py-24 px-6 text-center bg-espresso text-cream">
         <div className="max-w-xl mx-auto">
@@ -235,15 +316,24 @@ export default function LandingPage() {
             Ready to plan something delicious?
           </h2>
           <p className="text-cream/60 font-sans mb-8 text-lg">
-            Start in 30 seconds. No account. No friction. Just a beautiful week ahead.
+            Start in 30 seconds. No account needed to plan — create one to save, share, and collaborate.
           </p>
-          <Link
-            href="/plan/new"
-            className="inline-flex items-center gap-3 px-8 py-4 bg-rose text-espresso font-sans font-semibold text-base rounded-2xl hover:bg-rose-light transition-all hover:-translate-y-1 hover:shadow-lg"
-          >
-            <span>✨</span>
-            Start Planning Now
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/plan/new"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-rose text-espresso font-sans font-semibold text-base rounded-2xl hover:bg-rose-light transition-all hover:-translate-y-1 hover:shadow-lg"
+            >
+              <span>✨</span>
+              Start Planning Now
+            </Link>
+            <Link
+              href="/sign-up"
+              className="inline-flex items-center gap-2 px-6 py-4 border border-cream/20 text-cream/80 font-sans font-medium text-base rounded-2xl hover:border-cream/40 hover:text-cream transition-all"
+            >
+              Create free account
+            </Link>
+          </div>
+          <p className="text-cream/30 font-sans text-xs mt-6">Free forever · No credit card · Share with anyone</p>
         </div>
       </section>
 
@@ -304,6 +394,39 @@ const DEMO_DAY_MEALS = [
   { day: "Mon", meals: ["Avocado toast", "Caesar salad", "Pasta arrabbiata"] },
   { day: "Wed", meals: ["Greek yogurt", "Leftovers", "Roast chicken"] },
   { day: "Fri", meals: ["Smoothie", "Soup & bread", "Thai curry"] },
+];
+
+// Sharing feature highlights
+const SHARE_FEATURES = [
+  {
+    emoji: "🔗",
+    title: "One-click grocery sharing",
+    description: "Generate a link and send it to anyone — a partner, roommate, or family member. They can check items off and add their own.",
+  },
+  {
+    emoji: "✏️",
+    title: "Collaborative editing",
+    description: "Anyone with the link can edit the list in real time. Add items, remove what you don't need, check things off as you shop.",
+  },
+  {
+    emoji: "📖",
+    title: "Share saved recipes",
+    description: "Save recipes from your meal plan and share them with a link. Nutrition info, tags, and notes included.",
+  },
+];
+
+const SHARE_STEPS = [
+  { step: 1, text: "Plan your week and generate your grocery list." },
+  { step: 2, text: 'Click "Share grocery list" to get a shareable link.' },
+  { step: 3, text: "Send it to anyone — they can view, edit, and check off items without signing in." },
+];
+
+const DEMO_SHARED_ITEMS = [
+  { label: "2 avocados", checked: true },
+  { label: "1 bag mixed salad leaves", checked: true },
+  { label: "1 whole chicken (1.5 kg)", checked: false },
+  { label: "Pasta 400 g", checked: false },
+  { label: "Greek yogurt 500 g", checked: false },
 ];
 
 // Demo grocery list preview data

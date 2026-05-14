@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { db } from "../../../lib/db/db";
-import { mealWeeks, weekResults } from "../../../lib/db/schema";
+import { mealWeeks, weekResults, meals } from "../../../lib/db/schema";
 import { eq, desc, count } from "drizzle-orm";
 import { getOrCreateDbUser } from "../../../lib/utils/getOrCreateDbUser";
 import { Navbar } from "../../../components/layout/Navbar";
@@ -10,6 +10,8 @@ import { formatWeekRange } from "../../../lib/utils/weekHelpers";
 import { Card, CardBody } from "../../../components/ui/Card";
 import { Button } from "../../../components/ui/Button";
 import { Calendar, Utensils, Sparkles, ArrowRight } from "lucide-react";
+import { manualGroceryLists } from "../../../lib/db/schema";
+import { ManualGroceryListsSection } from "./ManualGroceryListsSection";
 
 export default async function DashboardPage() {
   const user = await getOrCreateDbUser();
@@ -26,14 +28,20 @@ export default async function DashboardPage() {
 
   const currentWeek = weeks[0] ?? null;
 
+  // Fetch manual grocery lists
+  const myLists = await db.query.manualGroceryLists.findMany({
+    where: eq(manualGroceryLists.userId, user.id),
+    orderBy: [desc(manualGroceryLists.createdAt)],
+  });
+
   // Count meals for current week
   let currentWeekMealCount = 0;
   if (currentWeek) {
-    const result = await db
+    const [result] = await db
       .select({ count: count() })
-      .from(mealWeeks)
-      .where(eq(mealWeeks.id, currentWeek.id));
-    currentWeekMealCount = 0; // We'd need a join to count meals, keeping simple for now
+      .from(meals)
+      .where(eq(meals.weekId, currentWeek.id));
+    currentWeekMealCount = result?.count ?? 0;
   }
 
   const hour = new Date().getHours();
@@ -122,6 +130,11 @@ export default async function DashboardPage() {
               </CardBody>
             </Card>
           )}
+        </div>
+
+        {/* Manual grocery lists */}
+        <div className="mb-10">
+          <ManualGroceryListsSection initialLists={myLists} />
         </div>
 
         {/* Past weeks */}

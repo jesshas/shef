@@ -1,0 +1,50 @@
+"use client";
+
+import { GroceryList } from "../../../../components/results/GroceryList";
+import { updateManualGroceryListViaTokenAction } from "../../../../lib/actions/manualGroceryList";
+import type { GroceryCategory } from "../../../../lib/validations/schemas";
+
+interface SharedManualListClientProps {
+  token: string;
+  title: string;
+  categories: GroceryCategory[];
+}
+
+export function SharedManualListClient({ token, title, categories }: SharedManualListClientProps) {
+  return (
+    <div className="min-h-screen bg-cream">
+      <header className="border-b border-rose/20 bg-cream/80 backdrop-blur-sm sticky top-0 z-10">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <span className="font-serif text-2xl tracking-tighter text-espresso">shef</span>
+          <p className="text-xs font-sans text-espresso/50">Shared grocery list</p>
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+        <div className="mb-6">
+          <h1 className="font-serif tracking-tighter text-3xl text-espresso mb-1">{title}</h1>
+          <p className="text-sm text-espresso/50 font-sans">
+            Check off items as you shop, or add what you need.
+          </p>
+        </div>
+
+        <GroceryList
+          categories={categories}
+          onUpdate={async (updated) => {
+            const res = await updateManualGroceryListViaTokenAction({ token, categories: updated });
+            if (!res.success) throw new Error(res.error);
+          }}
+        />
+
+        <div className="mt-8 text-center">
+          <a
+            href="/"
+            className="text-xs text-espresso/30 font-sans hover:text-espresso/60 transition-colors"
+          >
+            Plan your own week with shef →
+          </a>
+        </div>
+      </main>
+    </div>
+  );
+}
