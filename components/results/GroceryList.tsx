@@ -22,44 +22,46 @@ function AddItemRow({ onAdd, onCancel }: AddItemRowProps) {
   }
 
   return (
-    <div className="flex items-center gap-2 py-2 border-t border-rose/10">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-2 border-t border-rose/10">
       <input
         autoFocus
         value={draft.name}
         onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
         onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") onCancel(); }}
         placeholder="Item name"
-        className="flex-1 min-w-0 text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-1 focus:outline-none focus:border-rose"
+        className="flex-1 min-w-0 text-base sm:text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-2 sm:py-1 focus:outline-none focus:border-rose"
       />
-      <input
-        value={draft.quantity}
-        onChange={(e) => setDraft((d) => ({ ...d, quantity: e.target.value }))}
-        onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") onCancel(); }}
-        placeholder="Qty"
-        className="w-14 text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-1 focus:outline-none focus:border-rose"
-      />
-      <input
-        value={draft.unit}
-        onChange={(e) => setDraft((d) => ({ ...d, unit: e.target.value }))}
-        onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") onCancel(); }}
-        placeholder="Unit"
-        className="w-14 text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-1 focus:outline-none focus:border-rose"
-      />
-      <button
-        onClick={handleConfirm}
-        disabled={!draft.name.trim()}
-        className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg bg-sage/20 hover:bg-sage/40 text-sage transition-colors disabled:opacity-40"
-        aria-label="Add item"
-      >
-        <Check size={14} strokeWidth={2.5} />
-      </button>
-      <button
-        onClick={onCancel}
-        className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-rose/20 text-espresso/40 hover:text-espresso/70 transition-colors"
-        aria-label="Cancel"
-      >
-        ✕
-      </button>
+      <div className="flex items-center gap-2">
+        <input
+          value={draft.quantity}
+          onChange={(e) => setDraft((d) => ({ ...d, quantity: e.target.value }))}
+          onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") onCancel(); }}
+          placeholder="Qty"
+          className="w-20 sm:w-14 text-base sm:text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-2 sm:py-1 focus:outline-none focus:border-rose"
+        />
+        <input
+          value={draft.unit}
+          onChange={(e) => setDraft((d) => ({ ...d, unit: e.target.value }))}
+          onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") onCancel(); }}
+          placeholder="Unit"
+          className="w-20 sm:w-14 text-base sm:text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-2 sm:py-1 focus:outline-none focus:border-rose"
+        />
+        <button
+          onClick={handleConfirm}
+          disabled={!draft.name.trim()}
+          className="shrink-0 w-10 h-10 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg bg-sage/20 hover:bg-sage/40 text-sage transition-colors disabled:opacity-40"
+          aria-label="Add item"
+        >
+          <Check size={14} strokeWidth={2.5} />
+        </button>
+        <button
+          onClick={onCancel}
+          className="shrink-0 w-10 h-10 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg hover:bg-rose/20 text-espresso/40 hover:text-espresso/70 transition-colors"
+          aria-label="Cancel"
+        >
+          ✕
+        </button>
+      </div>
     </div>
   );
 }
@@ -94,7 +96,7 @@ function AddCategoryRow({ existingNames, onAdd, onCancel }: AddCategoryRowProps)
         onChange={(e) => setDraft(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") onCancel(); }}
         placeholder="Section name (e.g. Produce)"
-        className="flex-1 min-w-0 text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-1 focus:outline-none focus:border-rose"
+        className="flex-1 min-w-0 text-base sm:text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-2 sm:py-1 focus:outline-none focus:border-rose"
       />
       <datalist id="category-suggestions">
         {available.map((c) => <option key={c} value={c} />)}
@@ -102,14 +104,14 @@ function AddCategoryRow({ existingNames, onAdd, onCancel }: AddCategoryRowProps)
       <button
         onClick={handleConfirm}
         disabled={!draft.trim() || existingNames.includes(draft.trim())}
-        className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg bg-sage/20 hover:bg-sage/40 text-sage transition-colors disabled:opacity-40"
+        className="shrink-0 w-10 h-10 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg bg-sage/20 hover:bg-sage/40 text-sage transition-colors disabled:opacity-40"
         aria-label="Add section"
       >
         <Check size={14} strokeWidth={2.5} />
       </button>
       <button
         onClick={onCancel}
-        className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-rose/20 text-espresso/40 hover:text-espresso/70 transition-colors"
+        className="shrink-0 w-10 h-10 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg hover:bg-rose/20 text-espresso/40 hover:text-espresso/70 transition-colors"
         aria-label="Cancel"
       >
         ✕
@@ -133,9 +135,10 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 interface GroceryListProps {
   categories: GroceryCategory[];
   onUpdate?: (categories: GroceryCategory[]) => Promise<void>;
+  shareButton?: React.ReactNode;
 }
 
-export function GroceryList({ categories: initialCategories, onUpdate }: GroceryListProps) {
+export function GroceryList({ categories: initialCategories, onUpdate, shareButton }: GroceryListProps) {
   const [localCategories, setLocalCategories] = useState<GroceryCategory[]>(initialCategories);
   const [copied, setCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -230,14 +233,15 @@ export function GroceryList({ categories: initialCategories, onUpdate }: Grocery
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="font-serif tracking-tighter text-2xl text-espresso">Grocery List</h2>
             <p className="text-sm text-espresso/60 font-sans mt-1">
               {totalItems} items across {localCategories.length} categories
             </p>
           </div>
-          <div className="flex gap-2 flex-wrap justify-end">
+          <div className="flex gap-2 flex-wrap sm:justify-end">
+            {shareButton}
             {onUpdate && isDirty && (
               <Button
                 variant="primary"
@@ -318,7 +322,7 @@ export function GroceryList({ categories: initialCategories, onUpdate }: Grocery
                 ) : (
                   <button
                     onClick={() => setAddingTo(category.name)}
-                    className="flex items-center gap-1.5 mt-2 pl-1 text-xs font-sans text-espresso/40 hover:text-espresso/70 transition-colors"
+                    className="flex items-center gap-1.5 mt-2 pl-1 py-2 text-xs font-sans text-espresso/40 hover:text-espresso/70 transition-colors"
                   >
                     <Plus size={12} />
                     Add item
@@ -340,7 +344,7 @@ export function GroceryList({ categories: initialCategories, onUpdate }: Grocery
           ) : (
             <button
               onClick={() => setAddingCategory(true)}
-              className="flex items-center gap-1.5 mt-4 text-xs font-sans text-espresso/40 hover:text-espresso/70 transition-colors"
+              className="flex items-center gap-1.5 mt-4 py-2 text-xs font-sans text-espresso/40 hover:text-espresso/70 transition-colors"
             >
               <Plus size={12} />
               Add section

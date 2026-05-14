@@ -67,10 +67,10 @@ export function ManualListClient({ list }: ManualListClientProps) {
                 onKeyDown={(e) => { if (e.key === "Enter") handleSaveTitle(); if (e.key === "Escape") { setTitleDraft(list.title); setIsEditingTitle(false); } }}
                 className="flex-1 font-serif tracking-tighter text-xl text-espresso bg-transparent border-b border-espresso/30 focus:border-espresso focus:outline-none pb-0.5"
               />
-              <button onClick={handleSaveTitle} disabled={isPending} className="text-sage hover:text-sage/80 transition-colors">
+              <button onClick={handleSaveTitle} disabled={isPending} className="w-9 h-9 flex items-center justify-center rounded-md text-sage hover:text-sage/80 transition-colors">
                 <Check size={16} strokeWidth={2.5} />
               </button>
-              <button onClick={() => { setTitleDraft(list.title); setIsEditingTitle(false); }} className="text-espresso/40 hover:text-espresso/70 transition-colors">
+              <button onClick={() => { setTitleDraft(list.title); setIsEditingTitle(false); }} className="w-9 h-9 flex items-center justify-center rounded-md text-espresso/40 hover:text-espresso/70 transition-colors">
                 <X size={16} />
               </button>
             </div>

@@ -100,13 +100,13 @@ export function ManualGroceryListsSection({ initialLists }: ManualGroceryListsSe
                 <button
                   onClick={() => handleDelete(list.id)}
                   disabled={isPending}
-                  className="p-2 rounded-lg text-espresso/30 hover:text-red-400 hover:bg-red-50 transition-colors disabled:opacity-40"
+                  className="w-10 h-10 flex items-center justify-center rounded-lg text-espresso/30 hover:text-red-400 hover:bg-red-50 transition-colors disabled:opacity-40"
                   aria-label="Delete list"
                 >
                   <Trash2 size={14} />
                 </button>
                 <Link href={`/lists/${list.id}`}>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-espresso text-cream text-xs font-sans hover:bg-espresso/80 transition-colors">
+                  <div className="flex items-center gap-1.5 px-4 py-3 sm:px-3 sm:py-1.5 rounded-lg bg-espresso text-cream text-xs font-sans hover:bg-espresso/80 transition-colors">
                     Open
                     <ArrowRight size={12} />
                   </div>

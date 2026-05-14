@@ -13,6 +13,7 @@ interface ResultsViewProps {
   isGuest: boolean;
   onGuestPromptDismiss: () => void;
   onGroceryUpdate?: (categories: GroceryCategory[]) => Promise<void>;
+  groceryShareButton?: React.ReactNode;
 }
 
 export function ResultsView({
@@ -21,6 +22,7 @@ export function ResultsView({
   isGuest,
   onGuestPromptDismiss,
   onGroceryUpdate,
+  groceryShareButton,
 }: ResultsViewProps) {
   const summary = deriveSummary(results.mealNutrition);
 
@@ -54,7 +56,7 @@ export function ResultsView({
       )}
 
       {/* Grocery List */}
-      <GroceryList categories={results.categories} onUpdate={onGroceryUpdate} />
+      <GroceryList categories={results.categories} onUpdate={onGroceryUpdate} shareButton={groceryShareButton} />
     </div>
   );
 }

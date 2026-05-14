@@ -39,8 +39,9 @@ function ResultsSkeleton() {
 
 export default function PlanNewPage() {
   const { isSignedIn } = useUser();
-  const { isGuest } = useGuestPlan();
+  const { isGuest, importedWeekId } = useGuestPlan();
   const [results, setResults] = useState<WeekResults | null>(null);
+  const [savedWeekId, setSavedWeekId] = useState<string | undefined>(undefined);
   const [guestPromptDismissed, setGuestPromptDismissed] = useState(false);
   const [copyingMeal, setCopyingMeal] = useState<MealInput | null>(null);
   const [showLimitModal, setShowLimitModal] = useState(false);
@@ -57,6 +58,12 @@ export default function PlanNewPage() {
       setAiPromptsUsed(getGuestAiPromptCount());
     }
   }, [isSignedIn]);
+
+  // When a guest plan is imported on sign-in, adopt the created weekId so
+  // subsequent generations update that week instead of creating a new one.
+  useEffect(() => {
+    if (importedWeekId) setSavedWeekId(importedWeekId);
+  }, [importedWeekId]);
 
   const {
     meals,
@@ -136,6 +143,7 @@ export default function PlanNewPage() {
       try {
         const result = await generateWeekPlanAction({
           meals,
+          weekId: savedWeekId,
           guestGenerationCount: isSignedIn ? undefined : generationsUsed,
         });
 
@@ -143,6 +151,7 @@ export default function PlanNewPage() {
 
         if (result.success && result.results) {
           setResults(result.results);
+          if (result.weekId) setSavedWeekId(result.weekId);
 
           // Update generation counts
           if (!isSignedIn) {

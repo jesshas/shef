@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "../../../../lib/db/db";
 import { weekResults, mealWeeks } from "../../../../lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SharedGroceryPage({ params }: Props) {
   const { token } = await params;
+  const { userId } = await auth();
 
   const row = await db
     .select({
@@ -47,6 +49,7 @@ export default async function SharedGroceryPage({ params }: Props) {
       token={token}
       categories={row[0].groceryList as Parameters<typeof SharedGroceryClient>[0]["categories"]}
       weekStartDate={week[0]?.weekStartDate ?? null}
+      isLoggedIn={!!userId}
     />
   );
 }

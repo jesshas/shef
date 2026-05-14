@@ -153,8 +153,12 @@ export function WeekPlanView({ week, meals: initialMeals, savedResults, userId }
 
       <div ref={resultsRef}>
         {results && (
-          <>
-            <div className="flex items-center justify-end mb-4">
+          <ResultsView
+            results={results}
+            meals={meals}
+            isGuest={false}
+            onGuestPromptDismiss={() => {}}
+            groceryShareButton={
               <ShareButton
                 label="Share grocery list"
                 shareUrlPath="/share/grocery"
@@ -164,19 +168,13 @@ export function WeekPlanView({ week, meals: initialMeals, savedResults, userId }
                   return res.token;
                 }}
               />
-            </div>
-            <ResultsView
-              results={results}
-              meals={meals}
-              isGuest={false}
-              onGuestPromptDismiss={() => {}}
-              onGroceryUpdate={async (categories) => {
-                const res = await updateGroceryListAction({ weekId: week.id, categories });
-                if (!res.success) throw new Error(res.error);
-                setResults((prev) => prev ? { ...prev, categories } : prev);
-              }}
-            />
-          </>
+            }
+            onGroceryUpdate={async (categories) => {
+              const res = await updateGroceryListAction({ weekId: week.id, categories });
+              if (!res.success) throw new Error(res.error);
+              setResults((prev) => prev ? { ...prev, categories } : prev);
+            }}
+          />
         )}
       </div>
 

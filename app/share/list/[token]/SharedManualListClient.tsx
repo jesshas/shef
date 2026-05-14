@@ -1,6 +1,7 @@
 "use client";
 
 import { GroceryList } from "../../../../components/results/GroceryList";
+import { SignUpGate } from "../../../../components/share/SignUpGate";
 import { updateManualGroceryListViaTokenAction } from "../../../../lib/actions/manualGroceryList";
 import type { GroceryCategory } from "../../../../lib/validations/schemas";
 
@@ -8,9 +9,10 @@ interface SharedManualListClientProps {
   token: string;
   title: string;
   categories: GroceryCategory[];
+  isLoggedIn: boolean;
 }
 
-export function SharedManualListClient({ token, title, categories }: SharedManualListClientProps) {
+export function SharedManualListClient({ token, title, categories, isLoggedIn }: SharedManualListClientProps) {
   return (
     <div className="min-h-screen bg-cream">
       <header className="border-b border-rose/20 bg-cream/80 backdrop-blur-sm sticky top-0 z-10">
@@ -21,6 +23,7 @@ export function SharedManualListClient({ token, title, categories }: SharedManua
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+        {/* Title — always visible */}
         <div className="mb-6">
           <h1 className="font-serif tracking-tighter text-3xl text-espresso mb-1">{title}</h1>
           <p className="text-sm text-espresso/50 font-sans">
@@ -28,13 +31,16 @@ export function SharedManualListClient({ token, title, categories }: SharedManua
           </p>
         </div>
 
-        <GroceryList
-          categories={categories}
-          onUpdate={async (updated) => {
-            const res = await updateManualGroceryListViaTokenAction({ token, categories: updated });
-            if (!res.success) throw new Error(res.error);
-          }}
-        />
+        {/* List — gated for guests */}
+        <SignUpGate isLoggedIn={isLoggedIn} returnTo={`/share/list/${token}`}>
+          <GroceryList
+            categories={categories}
+            onUpdate={async (updated) => {
+              const res = await updateManualGroceryListViaTokenAction({ token, categories: updated });
+              if (!res.success) throw new Error(res.error);
+            }}
+          />
+        </SignUpGate>
 
         <div className="mt-8 text-center">
           <a

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import {
@@ -14,6 +14,7 @@ import { saveGuestPlanAction } from "../lib/actions/saveGuestPlan";
  */
 export function useGuestPlan() {
   const { isSignedIn, user } = useUser();
+  const [importedWeekId, setImportedWeekId] = useState<string | undefined>(undefined);
 
   const importGuestPlan = useCallback(async () => {
     const guestPlan = readGuestPlan();
@@ -29,6 +30,7 @@ export function useGuestPlan() {
 
       if (result.success) {
         clearGuestPlan();
+        if (result.weekId) setImportedWeekId(result.weekId);
         toast.success("Your plan has been saved! 🌿", {
           description: "You can access it anytime from your dashboard.",
         });
@@ -49,5 +51,5 @@ export function useGuestPlan() {
     }
   }, [isSignedIn, importGuestPlan]);
 
-  return { isGuest: !isSignedIn };
+  return { isGuest: !isSignedIn, importedWeekId };
 }

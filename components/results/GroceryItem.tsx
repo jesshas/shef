@@ -34,43 +34,45 @@ export function GroceryItem({ name, quantity, unit, onEdit, onDelete }: GroceryI
 
   if (editing) {
     return (
-      <div className="flex items-center gap-2 py-2">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-2">
         <input
           ref={nameRef}
           value={draft.name}
           onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
           onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") handleCancel(); }}
           placeholder="Item name"
-          className="flex-1 min-w-0 text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-1 focus:outline-none focus:border-rose"
+          className="flex-1 min-w-0 text-base sm:text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-2 sm:py-1 focus:outline-none focus:border-rose"
         />
-        <input
-          value={draft.quantity}
-          onChange={(e) => setDraft((d) => ({ ...d, quantity: e.target.value }))}
-          onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") handleCancel(); }}
-          placeholder="Qty"
-          className="w-14 text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-1 focus:outline-none focus:border-rose"
-        />
-        <input
-          value={draft.unit}
-          onChange={(e) => setDraft((d) => ({ ...d, unit: e.target.value }))}
-          onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") handleCancel(); }}
-          placeholder="Unit"
-          className="w-14 text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-1 focus:outline-none focus:border-rose"
-        />
-        <button
-          onClick={handleConfirm}
-          className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg bg-sage/20 hover:bg-sage/40 text-sage transition-colors"
-          aria-label="Confirm"
-        >
-          <Check size={14} strokeWidth={2.5} />
-        </button>
-        <button
-          onClick={handleCancel}
-          className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-rose/20 text-espresso/40 hover:text-espresso/70 transition-colors"
-          aria-label="Cancel"
-        >
-          <X size={14} />
-        </button>
+        <div className="flex items-center gap-2">
+          <input
+            value={draft.quantity}
+            onChange={(e) => setDraft((d) => ({ ...d, quantity: e.target.value }))}
+            onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") handleCancel(); }}
+            placeholder="Qty"
+            className="w-20 sm:w-14 text-base sm:text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-2 sm:py-1 focus:outline-none focus:border-rose"
+          />
+          <input
+            value={draft.unit}
+            onChange={(e) => setDraft((d) => ({ ...d, unit: e.target.value }))}
+            onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") handleCancel(); }}
+            placeholder="Unit"
+            className="w-20 sm:w-14 text-base sm:text-sm font-sans text-espresso bg-cream border border-rose/40 rounded-lg px-2 py-2 sm:py-1 focus:outline-none focus:border-rose"
+          />
+          <button
+            onClick={handleConfirm}
+            className="shrink-0 w-10 h-10 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg bg-sage/20 hover:bg-sage/40 text-sage transition-colors"
+            aria-label="Confirm"
+          >
+            <Check size={14} strokeWidth={2.5} />
+          </button>
+          <button
+            onClick={handleCancel}
+            className="shrink-0 w-10 h-10 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg hover:bg-rose/20 text-espresso/40 hover:text-espresso/70 transition-colors"
+            aria-label="Cancel"
+          >
+            <X size={14} />
+          </button>
+        </div>
       </div>
     );
   }
@@ -113,13 +115,13 @@ export function GroceryItem({ name, quantity, unit, onEdit, onDelete }: GroceryI
         )}
       </div>
 
-      {/* Edit / Delete (shown on hover when editable) */}
+      {/* Edit / Delete (always visible on mobile, hover-only on desktop) */}
       {(onEdit || onDelete) && (
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+        <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
           {onEdit && (
             <button
               onClick={() => setEditing(true)}
-              className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-rose/20 text-espresso/30 hover:text-espresso/70 transition-colors"
+              className="w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center rounded-md hover:bg-rose/20 text-espresso/30 hover:text-espresso/70 transition-colors"
               aria-label="Edit item"
             >
               <Pencil size={12} />
@@ -128,7 +130,7 @@ export function GroceryItem({ name, quantity, unit, onEdit, onDelete }: GroceryI
           {onDelete && (
             <button
               onClick={onDelete}
-              className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-rose/30 text-espresso/30 hover:text-rose transition-colors"
+              className="w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center rounded-md hover:bg-rose/30 text-espresso/30 hover:text-rose transition-colors"
               aria-label="Delete item"
             >
               <Trash2 size={12} />

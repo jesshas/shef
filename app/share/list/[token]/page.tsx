@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "../../../../lib/db/db";
 import { manualGroceryLists } from "../../../../lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -22,6 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SharedManualListPage({ params }: Props) {
   const { token } = await params;
+  const { userId } = await auth();
 
   const [row] = await db
     .select({
@@ -39,6 +41,7 @@ export default async function SharedManualListPage({ params }: Props) {
       token={token}
       title={row.title}
       categories={row.categories as GroceryCategory[]}
+      isLoggedIn={!!userId}
     />
   );
 }

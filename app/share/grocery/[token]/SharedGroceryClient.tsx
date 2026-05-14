@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { GroceryList } from "../../../../components/results/GroceryList";
+import { SignUpGate } from "../../../../components/share/SignUpGate";
 import { updateSharedGroceryListAction } from "../../../../lib/actions/shareTokens";
 import { formatWeekRange } from "../../../../lib/utils/weekHelpers";
 import type { GroceryCategory } from "../../../../lib/validations/schemas";
@@ -10,9 +10,10 @@ interface SharedGroceryClientProps {
   token: string;
   categories: GroceryCategory[];
   weekStartDate: string | null;
+  isLoggedIn: boolean;
 }
 
-export function SharedGroceryClient({ token, categories, weekStartDate }: SharedGroceryClientProps) {
+export function SharedGroceryClient({ token, categories, weekStartDate, isLoggedIn }: SharedGroceryClientProps) {
   return (
     <div className="min-h-screen bg-cream">
       {/* Header */}
@@ -33,6 +34,7 @@ export function SharedGroceryClient({ token, categories, weekStartDate }: Shared
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+        {/* Title — always visible */}
         <div className="mb-6">
           <h1 className="font-serif tracking-tighter text-3xl text-espresso mb-1">
             Grocery List
@@ -42,13 +44,16 @@ export function SharedGroceryClient({ token, categories, weekStartDate }: Shared
           </p>
         </div>
 
-        <GroceryList
-          categories={categories}
-          onUpdate={async (updated) => {
-            const res = await updateSharedGroceryListAction({ token, categories: updated });
-            if (!res.success) throw new Error(res.error);
-          }}
-        />
+        {/* List — gated for guests */}
+        <SignUpGate isLoggedIn={isLoggedIn} returnTo={`/share/grocery/${token}`}>
+          <GroceryList
+            categories={categories}
+            onUpdate={async (updated) => {
+              const res = await updateSharedGroceryListAction({ token, categories: updated });
+              if (!res.success) throw new Error(res.error);
+            }}
+          />
+        </SignUpGate>
 
         <div className="mt-8 text-center">
           <a

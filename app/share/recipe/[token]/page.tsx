@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "../../../../lib/db/db";
 import { savedRecipes } from "../../../../lib/db/schema";
 import { eq } from "drizzle-orm";
 import { ExternalLink, BookOpen } from "lucide-react";
 import { Badge } from "../../../../components/ui/Badge";
+import { SignUpGate } from "../../../../components/share/SignUpGate";
 import type { Metadata } from "next";
 
 interface Props {
@@ -25,6 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SharedRecipePage({ params }: Props) {
   const { token } = await params;
+  const { userId } = await auth();
+  const isLoggedIn = !!userId;
 
   const row = await db
     .select()
@@ -53,68 +57,71 @@ export default async function SharedRecipePage({ params }: Props) {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
-        <div className="bg-white border border-rose/30 rounded-2xl p-6 sm:p-8 shadow-sm">
-          {/* Title */}
-          <div className="flex items-start gap-3 mb-6">
-            <BookOpen size={20} className="text-sage mt-0.5 flex-shrink-0" />
-            <div>
-              <h1 className="font-serif tracking-tighter text-2xl sm:text-3xl text-espresso leading-tight">
-                {recipe.title}
-              </h1>
-              {recipe.url && (
-                <a
-                  href={recipe.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-sage hover:text-sage-dark transition-colors mt-1"
-                >
-                  View original recipe
-                  <ExternalLink size={12} />
-                </a>
-              )}
-            </div>
+        {/* Title — always visible as a teaser */}
+        <div className="flex items-start gap-3 mb-6">
+          <BookOpen size={20} className="text-sage mt-1 shrink-0" />
+          <div>
+            <h1 className="font-serif tracking-tighter text-2xl sm:text-3xl text-espresso leading-tight">
+              {recipe.title}
+            </h1>
+            {recipe.url && (
+              <a
+                href={recipe.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-sage hover:text-sage-dark transition-colors mt-1"
+              >
+                View original recipe
+                <ExternalLink size={12} />
+              </a>
+            )}
           </div>
-
-          {/* Nutrition */}
-          {nutrition?.calories && (
-            <div className="grid grid-cols-4 gap-3 mb-6">
-              {[
-                { label: "Calories", value: nutrition.calories, unit: "" },
-                { label: "Protein", value: nutrition.protein, unit: "g" },
-                { label: "Carbs", value: nutrition.carbs, unit: "g" },
-                { label: "Fat", value: nutrition.fat, unit: "g" },
-              ].map(({ label, value, unit }) => (
-                <div key={label} className="bg-cream rounded-xl p-3 text-center border border-rose/10">
-                  <p className="text-[10px] font-sans text-espresso/50 uppercase tracking-wide mb-1">
-                    {label}
-                  </p>
-                  <p className="text-lg font-serif tracking-tighter text-espresso">
-                    {value !== undefined ? `${Math.round(value)}${unit}` : "—"}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Notes */}
-          {recipe.notes && (
-            <div className="mb-6">
-              <p className="text-[11px] font-sans font-semibold text-espresso/40 uppercase tracking-wider mb-2">
-                Notes
-              </p>
-              <p className="text-sm font-sans text-espresso/80 leading-relaxed">{recipe.notes}</p>
-            </div>
-          )}
-
-          {/* Tags */}
-          {recipe.tags && recipe.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {recipe.tags.map((tag) => (
-                <Badge key={tag} variant="rose">{tag}</Badge>
-              ))}
-            </div>
-          )}
         </div>
+
+        {/* Recipe details — gated for guests */}
+        <SignUpGate isLoggedIn={isLoggedIn} returnTo={`/share/recipe/${token}`}>
+          <div className="bg-white border border-rose/30 rounded-2xl p-6 sm:p-8 shadow-sm">
+            {/* Nutrition */}
+            {nutrition?.calories && (
+              <div className="grid grid-cols-4 gap-3 mb-6">
+                {[
+                  { label: "Calories", value: nutrition.calories, unit: "" },
+                  { label: "Protein", value: nutrition.protein, unit: "g" },
+                  { label: "Carbs", value: nutrition.carbs, unit: "g" },
+                  { label: "Fat", value: nutrition.fat, unit: "g" },
+                ].map(({ label, value, unit }) => (
+                  <div key={label} className="bg-cream rounded-xl p-3 text-center border border-rose/10">
+                    <p className="text-[10px] font-sans text-espresso/50 uppercase tracking-wide mb-1">
+                      {label}
+                    </p>
+                    <p className="text-lg font-serif tracking-tighter text-espresso">
+                      {value !== undefined ? `${Math.round(value)}${unit}` : "—"}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Notes */}
+            {recipe.notes && (
+              <div className="mb-6">
+                <p className="text-[11px] font-sans font-semibold text-espresso/40 uppercase tracking-wider mb-2">
+                  Notes
+                </p>
+                <p className="text-sm font-sans text-espresso/80 leading-relaxed">{recipe.notes}</p>
+              </div>
+            )}
+
+            {/* Tags */}
+            {recipe.tags && recipe.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {recipe.tags.map((tag) => (
+                  <Badge key={tag} variant="rose">{tag}</Badge>
+                ))}
+              </div>
+            )}
+          </div>
+        </SignUpGate>
 
         <div className="mt-8 text-center">
           <a
