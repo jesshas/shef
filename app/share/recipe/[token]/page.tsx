@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .limit(1);
 
   return {
-    title: row[0] ? `${row[0].title} | shef` : "Shared Recipe | shef",
+    title: row[0] ? `Check out this recipe: ${row[0].title} | shef` : "Shared Recipe | shef",
   };
 }
 

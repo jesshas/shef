@@ -13,13 +13,21 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { token } = await params;
   const row = await db
-    .select({ weekId: weekResults.weekId })
+    .select({ weekStartDate: mealWeeks.weekStartDate })
     .from(weekResults)
+    .leftJoin(mealWeeks, eq(mealWeeks.id, weekResults.weekId))
     .where(eq(weekResults.shareToken, token))
     .limit(1);
 
-  if (!row[0]) return { title: "Shared Grocery List | shef" };
-  return { title: "Shared Grocery List | shef" };
+  if (!row[0]?.weekStartDate) return { title: "Check out my grocery list | shef" };
+
+  const start = new Date(row[0].weekStartDate);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const weekRange = `${fmt(start)}\u2013${fmt(end)}`;
+
+  return { title: `Check out my grocery list for ${weekRange} | shef` };
 }
 
 export default async function SharedGroceryPage({ params }: Props) {
