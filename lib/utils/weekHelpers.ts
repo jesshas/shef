@@ -80,6 +80,24 @@ export function getDaysOfWeek(): DayOfWeek[] {
 }
 
 /**
+ * Return the Monday that is 7 days after the given week start date
+ */
+export function getNextWeekStart(weekStartDate: string): string {
+  const date = new Date(weekStartDate + "T00:00:00");
+  date.setDate(date.getDate() + 7);
+  return date.toISOString().split("T")[0];
+}
+
+/**
+ * Return the Monday that is 7 days before the given week start date
+ */
+export function getPrevWeekStart(weekStartDate: string): string {
+  const date = new Date(weekStartDate + "T00:00:00");
+  date.setDate(date.getDate() - 7);
+  return date.toISOString().split("T")[0];
+}
+
+/**
  * Format meal type for display
  */
 export function formatMealType(mealType: string): string {

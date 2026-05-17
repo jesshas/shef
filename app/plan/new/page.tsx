@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useTransition, useEffect } from "react";
+import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
-import { Sparkles, ChevronDown } from "lucide-react";
+import { Sparkles, ChevronDown, Share2 } from "lucide-react";
 import { Navbar } from "../../../components/layout/Navbar";
 import { Footer } from "../../../components/layout/Footer";
 import { WeekGrid } from "../../../components/meal-grid/WeekGrid";
@@ -14,6 +15,8 @@ import { useMealSlideOver } from "../../../hooks/useMealSlideOver";
 import { useGuestPlan } from "../../../hooks/useGuestPlan";
 import { generateWeekPlanAction } from "../../../lib/actions/generateWeekPlan";
 import { generateMealsFromPromptAction } from "../../../lib/actions/generateMealsFromPrompt";
+import { createGroceryShareTokenAction } from "../../../lib/actions/shareTokens";
+import { ShareButton } from "../../../components/ui/ShareButton";
 import { formatWeekRange } from "../../../lib/utils/weekHelpers";
 import {
   getGuestGenerationCount,
@@ -297,6 +300,27 @@ export default function PlanNewPage() {
               meals={meals}
               isGuest={isGuest && !isSignedIn}
               onGuestPromptDismiss={() => setGuestPromptDismissed(true)}
+              groceryShareButton={
+                isSignedIn && savedWeekId ? (
+                  <ShareButton
+                    label="Share grocery list"
+                    shareUrlPath="/share/grocery"
+                    onGetToken={async () => {
+                      const res = await createGroceryShareTokenAction(savedWeekId);
+                      if (!res.success || !res.token) throw new Error(res.error);
+                      return res.token;
+                    }}
+                  />
+                ) : !isSignedIn ? (
+                  <Link
+                    href="/sign-up"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-sans rounded-full border border-espresso/20 bg-linen text-espresso/70 hover:text-espresso hover:border-espresso/40 transition-colors"
+                  >
+                    <Share2 size={11} />
+                    Share grocery list
+                  </Link>
+                ) : undefined
+              }
               onGroceryUpdate={async (categories) => {
                 setResults((prev) => prev ? { ...prev, categories } : prev);
               }}

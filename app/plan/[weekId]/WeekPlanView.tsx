@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useTransition } from "react";
-import { Sparkles, ChevronDown } from "lucide-react";
+import { Sparkles, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { WeekGrid } from "../../../components/meal-grid/WeekGrid";
 import { MealSlideOver } from "../../../components/meal-grid/MealSlideOver";
 import { ResultsView } from "../../../components/results/ResultsView";
@@ -10,7 +10,8 @@ import { generateWeekPlanAction } from "../../../lib/actions/generateWeekPlan";
 import { updateGroceryListAction } from "../../../lib/actions/updateGroceryList";
 import { createGroceryShareTokenAction } from "../../../lib/actions/shareTokens";
 import { ShareButton } from "../../../components/ui/ShareButton";
-import { formatWeekRange, generateLocalId } from "../../../lib/utils/weekHelpers";
+import { formatWeekRange, getNextWeekStart, getPrevWeekStart } from "../../../lib/utils/weekHelpers";
+import { updateWeekDateAction } from "../../../lib/actions/updateWeek";
 import type {
   WeekResults,
   MealInput,
@@ -29,6 +30,25 @@ interface WeekPlanViewProps {
 }
 
 export function WeekPlanView({ week, meals: initialMeals, savedResults, userId }: WeekPlanViewProps) {
+  const [weekStartDate, setWeekStartDate] = useState(week.weekStartDate);
+  const [isChangingWeek, setIsChangingWeek] = useState(false);
+
+  async function handleWeekChange(newStart: string) {
+    setIsChangingWeek(true);
+    try {
+      const res = await updateWeekDateAction(week.id, newStart);
+      if (res.success) {
+        setWeekStartDate(newStart);
+      } else {
+        toast.error(res.error ?? "Couldn't update week.");
+      }
+    } catch {
+      toast.error("Couldn't update week.");
+    } finally {
+      setIsChangingWeek(false);
+    }
+  }
+
   // Convert DB meals to MealInput format
   const [meals] = useState<MealInput[]>(
     initialMeals.map((m) => ({
@@ -97,9 +117,27 @@ export function WeekPlanView({ week, meals: initialMeals, savedResults, userId }
             Saved to your account
           </span>
         </div>
-        <h1 className="font-serif tracking-tighter text-4xl sm:text-5xl text-espresso mb-2">
-          {formatWeekRange(week.weekStartDate)}
-        </h1>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => handleWeekChange(getPrevWeekStart(weekStartDate))}
+            disabled={isChangingWeek}
+            aria-label="Previous week"
+            className="p-1.5 rounded-lg text-espresso/40 hover:text-espresso hover:bg-linen transition-colors disabled:opacity-40"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <h1 className="font-serif tracking-tighter text-4xl sm:text-5xl text-espresso mb-2">
+            {formatWeekRange(weekStartDate)}
+          </h1>
+          <button
+            onClick={() => handleWeekChange(getNextWeekStart(weekStartDate))}
+            disabled={isChangingWeek}
+            aria-label="Next week"
+            className="p-1.5 rounded-lg text-espresso/40 hover:text-espresso hover:bg-linen transition-colors disabled:opacity-40"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
         <p className="text-espresso/60 font-sans">
           {mealCount} meal{mealCount !== 1 ? "s" : ""} planned
         </p>
