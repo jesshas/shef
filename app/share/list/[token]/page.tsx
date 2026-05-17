@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .from(manualGroceryLists)
     .where(eq(manualGroceryLists.shareToken, token))
     .limit(1);
-  return { title: row ? `Check out my grocery list: ${row.title} | shef` : "Shared Grocery List | shef" };
+  return { title: row ? `Check out "${row.title}"` : "Shared grocery list" };
 }
 
 export default async function SharedManualListPage({ params }: Props) {

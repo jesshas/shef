@@ -19,15 +19,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .where(eq(weekResults.shareToken, token))
     .limit(1);
 
-  if (!row[0]?.weekStartDate) return { title: "Check out my grocery list | shef" };
+  if (!row[0]?.weekStartDate) return { title: "Check out this grocery list" };
 
   const start = new Date(row[0].weekStartDate);
   const end = new Date(start);
   end.setDate(start.getDate() + 6);
   const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const weekRange = `${fmt(start)}\u2013${fmt(end)}`;
+  const weekRange = `${fmt(start)}–${fmt(end)}`;
 
-  return { title: `Check out my grocery list for ${weekRange} | shef` };
+  return { title: `Grocery list for ${weekRange}` };
 }
 
 export default async function SharedGroceryPage({ params }: Props) {
