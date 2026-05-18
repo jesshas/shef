@@ -15,6 +15,8 @@ export interface GenerateWeekPlanInput {
   weekId?: string;
   /** Guest generation count passed from localStorage (used to enforce limit server-side for guests) */
   guestGenerationCount?: number;
+  /** Serving size for guests (signed-in users use their saved preference) */
+  guestServingSize?: number;
 }
 
 export interface GenerateWeekPlanResult {
@@ -24,6 +26,7 @@ export interface GenerateWeekPlanResult {
   /** "generation_limit" signals the UI to show the paywall modal */
   errorCode?: "generation_limit";
   weekId?: string;
+  servingSize?: number;
   /** Updated generation count so the client can sync localStorage */
   generationsUsed?: number;
   generationsRemaining?: number;
@@ -53,6 +56,7 @@ export async function generateWeekPlanAction(
 
   let dietaryPreferences: string[] = [];
   let dbUserId: string | undefined;
+  let servingSize = 1;
 
   // --- Signed-in: check + enforce generation limit in DB ---
   if (userId) {
@@ -62,6 +66,7 @@ export async function generateWeekPlanAction(
     if (user) {
       dietaryPreferences = (user.dietaryPreferences as string[]) ?? [];
       dbUserId = user.id;
+      servingSize = user.servingSize ?? 1;
 
       // Pro users have unlimited generations
       if (user.plan !== "pro") {
@@ -89,6 +94,7 @@ export async function generateWeekPlanAction(
         generationsRemaining: 0,
       };
     }
+    servingSize = Math.max(1, Math.min(20, input.guestServingSize ?? 1));
   }
 
   // Run AI generation
@@ -96,6 +102,7 @@ export async function generateWeekPlanAction(
     const results = await runGeneration({
       meals: validatedMeals,
       dietaryPreferences,
+      servingSize,
     });
 
     // --- Post-generation: increment count and save to DB if signed in ---
@@ -163,6 +170,7 @@ export async function generateWeekPlanAction(
         success: true,
         results,
         weekId,
+        servingSize,
         generationsUsed: used,
         generationsRemaining: Math.max(0, FREE_LIMITS.generations - used),
       };
@@ -173,6 +181,7 @@ export async function generateWeekPlanAction(
     return {
       success: true,
       results,
+      servingSize,
       generationsUsed: guestCount,
       generationsRemaining: Math.max(0, FREE_LIMITS.generations - guestCount),
     };

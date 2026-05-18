@@ -56,6 +56,7 @@ export default async function WeekPage({ params }: PageProps) {
           meals={weekMeals}
           savedResults={weekResult ?? null}
           userId={user.id}
+          servingSize={user.servingSize ?? 1}
         />
       </main>
       <Footer />

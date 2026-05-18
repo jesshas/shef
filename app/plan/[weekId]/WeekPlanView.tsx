@@ -27,9 +27,10 @@ interface WeekPlanViewProps {
   meals: Meal[];
   savedResults: WeekResult | null;
   userId: string;
+  servingSize: number;
 }
 
-export function WeekPlanView({ week, meals: initialMeals, savedResults, userId }: WeekPlanViewProps) {
+export function WeekPlanView({ week, meals: initialMeals, savedResults, userId, servingSize }: WeekPlanViewProps) {
   const [weekStartDate, setWeekStartDate] = useState(week.weekStartDate);
   const [isChangingWeek, setIsChangingWeek] = useState(false);
 
@@ -196,6 +197,7 @@ export function WeekPlanView({ week, meals: initialMeals, savedResults, userId }
             meals={meals}
             isGuest={false}
             onGuestPromptDismiss={() => {}}
+            servingSize={servingSize}
             groceryShareButton={
               <ShareButton
                 label="Share grocery list"

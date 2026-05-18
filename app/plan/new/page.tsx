@@ -45,6 +45,8 @@ export default function PlanNewPage() {
   const { isGuest, importedWeekId } = useGuestPlan();
   const [results, setResults] = useState<WeekResults | null>(null);
   const [savedWeekId, setSavedWeekId] = useState<string | undefined>(undefined);
+  const [servingSize, setServingSize] = useState(1);
+  const [guestServingSize, setGuestServingSize] = useState(1);
   const [guestPromptDismissed, setGuestPromptDismissed] = useState(false);
   const [copyingMeal, setCopyingMeal] = useState<MealInput | null>(null);
   const [showLimitModal, setShowLimitModal] = useState(false);
@@ -148,6 +150,7 @@ export default function PlanNewPage() {
           meals,
           weekId: savedWeekId,
           guestGenerationCount: isSignedIn ? undefined : generationsUsed,
+          guestServingSize: isSignedIn ? undefined : guestServingSize,
         });
 
         toast.dismiss(loadingToastId);
@@ -155,6 +158,8 @@ export default function PlanNewPage() {
         if (result.success && result.results) {
           setResults(result.results);
           if (result.weekId) setSavedWeekId(result.weekId);
+          if (result.servingSize) setServingSize(result.servingSize);
+          else if (!isSignedIn) setServingSize(guestServingSize);
 
           // Update generation counts
           if (!isSignedIn) {
@@ -207,6 +212,34 @@ export default function PlanNewPage() {
               </span>
             )}
           </p>
+
+          {!isSignedIn && (
+            <div className="flex items-center gap-3 mt-4">
+              <span className="text-sm font-sans text-espresso/60">Cooking for</span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setGuestServingSize((n) => Math.max(1, n - 1))}
+                  aria-label="Decrease serving size"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-espresso/20 text-espresso/60 hover:text-espresso hover:border-espresso/40 transition-colors text-sm font-sans"
+                >
+                  −
+                </button>
+                <span className="w-8 text-center text-sm font-sans font-semibold text-espresso tabular-nums">
+                  {guestServingSize}
+                </span>
+                <button
+                  onClick={() => setGuestServingSize((n) => Math.min(20, n + 1))}
+                  aria-label="Increase serving size"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-espresso/20 text-espresso/60 hover:text-espresso hover:border-espresso/40 transition-colors text-sm font-sans"
+                >
+                  +
+                </button>
+              </div>
+              <span className="text-sm font-sans text-espresso/60">
+                {guestServingSize === 1 ? "person" : "people"}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* AI Prompt Input */}
@@ -300,6 +333,7 @@ export default function PlanNewPage() {
               meals={meals}
               isGuest={isGuest && !isSignedIn}
               onGuestPromptDismiss={() => setGuestPromptDismissed(true)}
+              servingSize={servingSize}
               groceryShareButton={
                 isSignedIn && savedWeekId ? (
                   <ShareButton

@@ -5,9 +5,10 @@ import type { NutritionSummary } from "../../lib/utils/deriveSummary";
 
 interface NutritionSummaryProps {
   summary: NutritionSummary;
+  servingSize?: number;
 }
 
-export function NutritionSummaryView({ summary }: NutritionSummaryProps) {
+export function NutritionSummaryView({ summary, servingSize = 1 }: NutritionSummaryProps) {
   const maxProtein = Math.max(summary.totalProtein, 150);
   const maxCarbs = Math.max(summary.totalCarbs, 300);
   const maxFat = Math.max(summary.totalFat, 150);
@@ -20,7 +21,9 @@ export function NutritionSummaryView({ summary }: NutritionSummaryProps) {
           <div>
             <h2 className="font-serif tracking-tighter text-2xl text-espresso">Weekly Nutrition</h2>
             <p className="text-sm text-espresso/60 font-sans mt-1">
-              AI estimates based on your meal plan
+              {servingSize > 1
+                ? `AI estimates per person · planned for ${servingSize} people`
+                : "AI estimates based on your meal plan"}
             </p>
           </div>
         </div>

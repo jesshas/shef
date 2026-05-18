@@ -14,6 +14,7 @@ interface ResultsViewProps {
   onGuestPromptDismiss: () => void;
   onGroceryUpdate?: (categories: GroceryCategory[]) => Promise<void>;
   groceryShareButton?: React.ReactNode;
+  servingSize?: number;
 }
 
 export function ResultsView({
@@ -23,6 +24,7 @@ export function ResultsView({
   onGuestPromptDismiss,
   onGroceryUpdate,
   groceryShareButton,
+  servingSize = 1,
 }: ResultsViewProps) {
   const summary = deriveSummary(results.mealNutrition);
 
@@ -45,7 +47,7 @@ export function ResultsView({
       </div>
 
       {/* Nutrition Summary */}
-      <NutritionSummaryView summary={summary} />
+      <NutritionSummaryView summary={summary} servingSize={servingSize} />
 
       {/* Day-by-Day Breakdown */}
       <DayByDayBreakdown meals={meals} mealNutrition={results.mealNutrition} isSignedIn={!isGuest} />

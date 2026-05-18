@@ -32,8 +32,13 @@ const OPENAI_MODEL = process.env.OPENAI_MODEL ?? "gpt-4o";
 // Shared prompt builders
 // ---------------------------------------------------------------------------
 
-function nutritionPrompt(mealsText: string, preferencesText: string): string {
+function nutritionPrompt(mealsText: string, preferencesText: string, servingSize: number): string {
+  const servingNote = servingSize > 1
+    ? `This meal plan is for ${servingSize} people. Estimate nutrition per person (i.e. per 1 serving out of ${servingSize}).`
+    : "Estimate nutrition per serving (1 person).";
   return `For each of these meals, estimate the nutritional information per serving. If a recipe URL is provided, use it for accuracy. If estimating without a URL, set isEstimate to true.
+
+${servingNote}
 
 Meals:
 ${mealsText}
@@ -59,8 +64,13 @@ Return ONLY valid JSON with no markdown, no explanation, just the JSON object:
 }`;
 }
 
-function groceryPrompt(mealsText: string, preferencesText: string): string {
+function groceryPrompt(mealsText: string, preferencesText: string, servingSize: number): string {
+  const servingNote = servingSize > 1
+    ? `This meal plan is for ${servingSize} people. Scale all ingredient quantities accordingly.`
+    : "This meal plan is for 1 person.";
   return `Given these meals for the week, generate a consolidated grocery list grouped by category. Combine duplicate ingredients and consolidate quantities. Respect dietary preferences.
+
+${servingNote}
 
 Meals:
 ${mealsText}
@@ -188,6 +198,7 @@ async function complete(prompt: string): Promise<string> {
 export interface GenerateWeekPlanInput {
   meals: MealInput[];
   dietaryPreferences?: string[];
+  servingSize?: number;
 }
 
 /**
@@ -197,7 +208,7 @@ export interface GenerateWeekPlanInput {
 export async function generateWeekPlan(
   input: GenerateWeekPlanInput
 ): Promise<WeekResults> {
-  const { meals, dietaryPreferences = [] } = input;
+  const { meals, dietaryPreferences = [], servingSize = 1 } = input;
 
   const mealsText = meals
     .map(
@@ -214,8 +225,8 @@ export async function generateWeekPlan(
       : "no specific restrictions";
 
   const [nutritionText, groceryText] = await Promise.all([
-    complete(nutritionPrompt(mealsText, preferencesText)),
-    complete(groceryPrompt(mealsText, preferencesText)),
+    complete(nutritionPrompt(mealsText, preferencesText, servingSize)),
+    complete(groceryPrompt(mealsText, preferencesText, servingSize)),
   ]);
 
   const nutritionData = JSON.parse(nutritionText);
