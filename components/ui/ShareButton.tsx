@@ -61,10 +61,10 @@ export function ShareButton({ onGetToken, label = "Share", shareUrlPath }: Share
       {shareUrl && (
         <button
           onClick={() => copyToClipboard(shareUrl)}
-          className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-sans text-espresso/40 bg-linen border border-rose/20 rounded-full max-w-[180px] hover:text-espresso/70 hover:border-rose/40 transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-sans text-espresso/40 bg-linen border border-rose/20 rounded-full max-w-45 hover:text-espresso/70 hover:border-rose/40 transition-colors cursor-pointer"
           title="Click to copy"
         >
-          <Link size={9} className="flex-shrink-0" />
+          <Link size={9} className="shrink-0" />
           <span className="truncate">{shareUrl.replace(/^https?:\/\//, "")}</span>
         </button>
       )}

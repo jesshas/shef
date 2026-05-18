@@ -26,11 +26,10 @@ interface WeekPlanViewProps {
   week: MealWeek;
   meals: Meal[];
   savedResults: WeekResult | null;
-  userId: string;
   servingSize: number;
 }
 
-export function WeekPlanView({ week, meals: initialMeals, savedResults, userId, servingSize }: WeekPlanViewProps) {
+export function WeekPlanView({ week, meals: initialMeals, savedResults, servingSize }: WeekPlanViewProps) {
   const [weekStartDate, setWeekStartDate] = useState(week.weekStartDate);
   const [isChangingWeek, setIsChangingWeek] = useState(false);
 
